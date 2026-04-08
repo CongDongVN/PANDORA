@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { cartItems, favoriteItems } from '../data/cartData';
+import { cartItems, favoriteItems } from '../../data/cartData';
 import './Cart.css';
 
 const Cart = () => {
