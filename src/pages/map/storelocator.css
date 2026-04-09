@@ -1,0 +1,74 @@
+/* Thiết lập một chiều cao chung cho cả hàng (row).
+   Tôi giảm xuống 600px như bạn yêu cầu (trước là 650px). */
+@media (min-width: 992px) {
+    .locator-row {
+        height: 600px;
+    }
+}
+
+/* Đóng khung bản đồ */
+.map-wrapper {
+    width: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* Khối màu xám chứa danh sách cửa hàng */
+.store-list-box {
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    overflow-y: auto;
+    min-height: 0;
+    /* Rất quan trọng: Bắt buộc phải có để flex-grow có thể cuộn nội dung bên trong mà không làm vỡ khung */
+}
+
+/* Tùy chỉnh thanh cuộn cho khối danh sách cửa hàng */
+.store-list-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.store-list-box::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.store-list-box::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+
+.store-list-box::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* Hiệu ứng focus cho form select */
+.custom-select:focus {
+    border-color: #c01535;
+    box-shadow: 0 0 0 0.2rem rgba(192, 21, 53, 0.15);
+}
+
+/* Hiệu ứng link chỉ đường */
+.direction-link {
+    transition: color 0.2s;
+}
+
+.direction-link:hover {
+    color: #c01535 !important;
+    text-decoration: underline !important;
+}
+
+/* Responsive cho màn hình nhỏ (điện thoại, tablet) */
+@media (max-width: 991px) {
+    .locator-row {
+        height: auto;
+        /* Thả tự do chiều cao trên di động để các khối xếp chồng lên nhau */
+    }
+
+    .map-wrapper {
+        height: 400px;
+    }
+
+    .store-list-box {
+        height: 400px;
+        /* Cấp chiều cao tĩnh cho box danh sách trên di động */
+    }
+}
