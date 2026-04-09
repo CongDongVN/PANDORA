@@ -6,7 +6,7 @@ const UserBanner = ({ firstName, lastName }) => {
             className="d-flex align-items-center"
             style={{
                 width: '100%',
-                height: '360px', 
+                height: '368px', 
                 backgroundImage: 'url("/banner-account.jpg")',
                 backgroundSize: 'cover', 
                 backgroundPosition: 'left bottom',             
@@ -24,7 +24,7 @@ const UserBanner = ({ firstName, lastName }) => {
                     margin: 0, 
                     fontWeight: '700', 
                     textTransform: 'uppercase', 
-                    letterSpacing: '2px', 
+                    letterSpacing: '3px', 
                     lineHeight: '1.8'
                 }}>
                     Xin chào
