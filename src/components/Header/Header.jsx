@@ -1,7 +1,8 @@
 import React, { useState } from 'react'; // 1. Thêm useState vào đây
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Search, Heart, GeoAlt, Person, Bag, X, ChevronDown } from 'react-bootstrap-icons';
-import MegaMenu from './MegaMenu'; // 2. Đảm bảo bạn đã import file MegaMenu riêng
+import MegaMenu from './MegaMenu';
+import { Link } from 'react-router-dom';
 
 const PandoraHeader = () => {
   // 3. Khai báo state để quản lý ẩn hiện

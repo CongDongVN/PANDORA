@@ -1,0 +1,56 @@
+.footer-container {
+  background-color: #f8f9fa; /* Màu nền xám nhạt cực nhẹ */
+  font-family: 'Arial', sans-serif; /* Hoặc font chữ hệ thống của Pandora */
+}
+
+.footer-title {
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: none;
+  margin-bottom: 20px;
+  color: #000;
+}
+
+.footer-list li a {
+  text-decoration: none;
+  color: #666;
+  font-size: 13px;
+  transition: color 0.2s ease;
+}
+
+.footer-list li a:hover {
+  color: #000;
+  text-decoration: underline;
+}
+
+.footer-divider {
+  border-top: 1px solid #dee2e6;
+  opacity: 1;
+}
+
+.copyright-text {
+  font-weight: 700;
+  font-size: 14px;
+  color: #000;
+}
+
+.social-icon {
+  color: #000;
+  font-size: 20px;
+  text-decoration: none;
+}
+
+.social-icon:hover {
+  color: #555;
+}
+
+.bct-logo {
+  cursor: pointer;
+}
+
+/* Responsive tinh chỉnh cho mobile */
+@media (max-width: 768px) {
+  .footer-title {
+    margin-top: 10px;
+  }
+}

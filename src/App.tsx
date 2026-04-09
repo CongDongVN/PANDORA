@@ -1,4 +1,5 @@
 // 1. Import component Header của bạn
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header/Header'; 
 import BannerSlider from "./components/BannerSlider/BannerSlider.jsx";
 import ProductCard from "./components/ProductCard/ProductCard.jsx";
@@ -6,6 +7,9 @@ import CategoryList from "./components/CategoryList/CategoryList.jsx";
 import VideoSection from "./components/VideoSection/VideoSection.jsx";
 import FeatureGrid from './components/FeatureGrid/FeatureGrid';
 import ExplorePandora from './components/ExplorePandora/ExplorePandora';
+import Footer from './components/Footer/Footer.jsx';
+import LoginPage from './pages/Login/Login.jsx';
+import RegisterPage from './pages/Register/Register.jsx';
 // ... trong function App()
 <main className="container-fluid px-custom">
   <BannerSlider />
@@ -72,76 +76,60 @@ const categories = [
 ];
 function App() {
   return (
-    <div className="App">
-      {/* 3. Gọi component Header ra đây */}
-      <Header />
-      
-     <main className="container-fluid px-custom"> 
-  {/* Banner */}
-  <section className="mt-4">
-    <BannerSlider />
-     
-  </section>
-    {/* <section className="mt-5 mb-5">
-          <div className="row g-4 justify-content-center">
-            {categories.map((cat) => (
-              <div key={cat.id} className="col-6 col-sm-4 col-md-2 text-center">
-                <div className="category-item">
-                  <div className="category-image-wrapper mb-3">
-                    <img 
-                      src={cat.image} 
-                      alt={cat.name} 
-                      className="img-fluid category-img"
-                      // Thêm thuộc tính này để kiểm tra nếu ảnh lỗi
-                      onError={(e) => { e.target.src = 'https://via.placeholder.com/150' }}
-                    />
-                  </div>
-                  <h6 className="category-name">{cat.name}</h6>
+    <Router>
+      <div className="App">
+        {/* Header luôn hiện ở mọi trang */}
+        <Header />
+        
+        <Routes>
+          {/* TRANG CHỦ: Chứa toàn bộ nội dung cũ của bạn */}
+          <Route path="/" element={
+            <main className="container-fluid px-custom"> 
+              <section className="mt-4">
+                <BannerSlider />
+              </section>
+
+              <section className="mt-5">
+                <div className="row g-4 product-list-row">
+                  {productsData.map((item) => (
+                    <div className="col-12 col-md-6 col-lg-3" key={item.id}>
+                      <ProductCard product={item} />
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              <div className="container-fluid px-custom mt-5 mb-5">
+                <div className="row g-4 justify-content-center">
+                  {categories.map((cat) => (
+                    <div key={cat.id} className="col-6 col-sm-4 col-md-2 text-center">
+                      <div className="category-item">
+                        <div className="category-image-wrapper mb-3">
+                          <img src={cat.image} alt={cat.name} className="img-fluid category-img" />
+                        </div>
+                        <h6 className="category-name">{cat.name}</h6>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </section> */}
-  {/* Danh sách sản phẩm */}
-  <section className="mt-5">
-    <div className="row g-4 product-list-row">
-      {productsData.map((item) => (
-        <div className="col-12 col-md-6 col-lg-3" key={item.id}>
-          <ProductCard product={item} />
-        </div>
-      ))}
-    </div>
-  </section>
-  <div className="container-fluid px-custom mt-5 mb-5">
-      <div className="row g-4 justify-content-center">
-        {categories.map((cat) => (
-          <div key={cat.id} className="col-6 col-sm-4 col-md-2 text-center">
-            <div className="category-item">
-              <div className="category-image-wrapper mb-3">
-                <img 
-                  src={cat.image} 
-                  alt={cat.name} 
-                  className="img-fluid category-img"
-                />
-              </div>
-              <h6 className="category-name">{cat.name}</h6>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-    <VideoSection />
-     {/*  */}
-     <FeatureGrid />
-     <ExplorePandora />
 
-  {/* Tiêu đề dưới cùng */}
-  <section className="mt-5 mb-5">
-    <h2 className="text-center">Chào mừng đến với Pandora</h2>
-  </section>
-</main>
-    </div>
+              <VideoSection />
+              <FeatureGrid />
+              <ExplorePandora />
+            </main>
+          } />
+
+          {/* TRANG ĐĂNG NHẬP: Khi vào đường dẫn /login */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+        </Routes>
+        
+
+        {/* Footer luôn hiện ở mọi trang */}
+        <Footer />
+      </div>
+    </Router>
   );
 }
-
 export default App;
