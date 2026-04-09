@@ -1,121 +1,147 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+// 1. Import component Header của bạn
+import Header from './components/Header/Header'; 
+import BannerSlider from "./components/BannerSlider/BannerSlider.jsx";
+import ProductCard from "./components/ProductCard/ProductCard.jsx";
+import CategoryList from "./components/CategoryList/CategoryList.jsx";
+import VideoSection from "./components/VideoSection/VideoSection.jsx";
+import FeatureGrid from './components/FeatureGrid/FeatureGrid';
+import ExplorePandora from './components/ExplorePandora/ExplorePandora';
+// ... trong function App()
+<main className="container-fluid px-custom">
+  <BannerSlider />
+  <CategoryList />
+  
+  {/* Chèn phần Feature Grid vào đây */}
+  <FeatureGrid />
 
+  <section className="mt-5">
+     {/* Product List của bạn */}
+  </section>
+  
+  <VideoSection />
+</main>
+// Lưu ý: Đường dẫn phải khớp với cấu trúc thư mục của bạn
+
+// 2. Import Bootstrap (nếu chưa import ở index.js)
+import 'bootstrap/dist/css/bootstrap.min.css';
+const productsData = [
+  {
+    id: 1,
+    tag: "A Symbol Of VietNam",
+    image: "./assets/img/charm1.png", // Thay bằng link ảnh thật của bạn
+    title: "Bộ Vòng Charm Pandora Trái Tim Việt Nam",
+    originalPrice: "6,570,000₫",
+    salePrice: "6,451,000₫",
+    discount: "-2%"
+  },
+  {
+    id: 2,
+    tag: "A Symbol Of VietNam",
+    image: "./assets/img/charm2.png",
+    title: "Charm Bạc Pandora Bản Đồ Việt Nam",
+    salePrice: "2,590,000₫",
+    hasEngraving: true,
+    colors: ["#silver", "#gold"]
+  },
+   {
+    id: 3,
+    tag: "A Symbol Of VietNam",
+    image: "./assets/img/charm3.png",
+    title: "Bộ dây chuyền & Charm vị nhà, Dù ở đâu",
+    salePrice: "2,590,000₫",
+    hasEngraving: true,
+    colors: ["#silver", "#gold"]
+  },
+  {
+    id: 4,
+    tag: "A Symbol Of VietNam",
+    image: "./assets/img/charm4.png",
+    title: "Bộ dây chuyền & Charm vị nhà, Dù ở đâu",
+    salePrice: "2,590,000₫",
+    hasEngraving: true,
+    colors: ["#silver", "#gold"]
+  }
+];
+const categories = [
+  { id: 1, name: "SẢN PHẨM MỚI", image: "./assets/img/Sanphammoi.png" },
+  { id: 2, name: "CHARMS", image: "./assets/img/Charms.png" },
+  { id: 3, name: "VÒNG TAY", image: "./assets/img/Vongtay.png" },
+  { id: 4, name: "NHẪN", image: "./assets/img/Nhan.png" },
+  { id: 5, name: "HOA TAI", image: "./assets/img/Hoatai.png" },
+  { id: 6, name: "DÂY CHUYỀN", image: "./assets/img/Daychuyen.png" },
+];
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="App">
+      {/* 3. Gọi component Header ra đây */}
+      <Header />
+      
+     <main className="container-fluid px-custom"> 
+  {/* Banner */}
+  <section className="mt-4">
+    <BannerSlider />
+     
+  </section>
+    {/* <section className="mt-5 mb-5">
+          <div className="row g-4 justify-content-center">
+            {categories.map((cat) => (
+              <div key={cat.id} className="col-6 col-sm-4 col-md-2 text-center">
+                <div className="category-item">
+                  <div className="category-image-wrapper mb-3">
+                    <img 
+                      src={cat.image} 
+                      alt={cat.name} 
+                      className="img-fluid category-img"
+                      // Thêm thuộc tính này để kiểm tra nếu ảnh lỗi
+                      onError={(e) => { e.target.src = 'https://via.placeholder.com/150' }}
+                    />
+                  </div>
+                  <h6 className="category-name">{cat.name}</h6>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section> */}
+  {/* Danh sách sản phẩm */}
+  <section className="mt-5">
+    <div className="row g-4 product-list-row">
+      {productsData.map((item) => (
+        <div className="col-12 col-md-6 col-lg-3" key={item.id}>
+          <ProductCard product={item} />
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      ))}
+    </div>
+  </section>
+  <div className="container-fluid px-custom mt-5 mb-5">
+      <div className="row g-4 justify-content-center">
+        {categories.map((cat) => (
+          <div key={cat.id} className="col-6 col-sm-4 col-md-2 text-center">
+            <div className="category-item">
+              <div className="category-image-wrapper mb-3">
+                <img 
+                  src={cat.image} 
+                  alt={cat.name} 
+                  className="img-fluid category-img"
+                />
+              </div>
+              <h6 className="category-name">{cat.name}</h6>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+    <VideoSection />
+     {/*  */}
+     <FeatureGrid />
+     <ExplorePandora />
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+  {/* Tiêu đề dưới cùng */}
+  <section className="mt-5 mb-5">
+    <h2 className="text-center">Chào mừng đến với Pandora</h2>
+  </section>
+</main>
+    </div>
+  );
 }
 
-export default App
+export default App;

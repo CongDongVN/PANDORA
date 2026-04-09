@@ -1,0 +1,77 @@
+/* --- Style cho Tiêu đề --- */
+.feature-main-title {
+  font-family: 'Playfair Display', serif; /* Font Serif sang trọng */
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+
+@media (max-width: 991px) {
+  .feature-title-container {
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+}
+
+/* --- Style cho Container Ảnh --- */
+.feature-item {
+  position: relative; /* Bắt buộc để đặt label tuyệt đối bên trong */
+  overflow: hidden;
+  background-color: #f9f9f9;
+  border-radius: 2px; /* Bo góc cực nhẹ */
+}
+
+.feature-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Đảm bảo ảnh lấp đầy khung mà không bị méo */
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.feature-item:hover img {
+  transform: scale(1.03); /* Hiệu ứng zoom nhẹ khi hover */
+}
+
+/* --- Style cho Lớp phủ Nhãn (Label Overlay) --- */
+.feature-label-overlay {
+  position: absolute;
+  /* Mặc định đặt ở trên ảnh một chút như hàng trên */
+  bottom: 10%; 
+  left: 0;
+  background-color: white;
+  padding: 10px 18px;
+  box-shadow: 2px 2px 15px rgba(0,0,0,0.08);
+  z-index: 10; /* Đảm bảo nằm trên ảnh */
+}
+
+/* Kẻ gạch dưới cho nhãn */
+.feature-label-overlay::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: black;
+  margin-top: 5px;
+}
+
+/* Style cho chữ trong nhãn */
+.feature-label-text {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #333;
+}
+
+/* --- Tùy chỉnh vị trí Label cho hàng dưới (sát mép hơn) --- */
+.label-bottom-left {
+  bottom: 15px; /* Điều chỉnh sát mép dưới hơn một chút */
+  left: 15px;   /* Đẩy vào trong một chút */
+  /* Hoặc nếu muốn sát mép trái tuyệt đối như hình, dùng left: 0 và padding */
+}
+
+/* --- Điều chỉnh chiều cao cho cột giữa --- */
+.feature-item-tall img {
+  min-height: 480px; /* Tăng chiều cao cho cột giữa nổi bật */
+}
+/* Import font tương tự hoặc dùng font mặc định sang trọng */

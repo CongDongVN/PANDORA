@@ -1,111 +1,138 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+/* 1. Đảm bảo toàn bộ ứng dụng dùng chung một hệ quy chiếu */
+@import url('https://fonts.googleapis.com/css2?family=Optima&family=Playfair+Display:wght@400;700&display=swap');
+.px-custom {
+  padding-left: 6.6% !important; 
+  padding-right: 6.6% !important;
+}
+.category-item {
+  cursor: pointer;
+  transition: transform 0.3s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+.category-item:hover {
+  transform: translateY(-5px); /* Hiệu ứng nhấc lên nhẹ khi di chuột vào */
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
+.category-image-wrapper {
+  background-color: #fff; /* Nền trắng sạch sẽ */
   display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1; /* Giữ khung hình vuông */
+  overflow: hidden;
 }
 
-body {
-  margin: 0;
+.category-img {
+  max-height: 80%; /* Giữ ảnh không quá to, tạo khoảng trắng sang trọng */
+  object-fit: contain;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+.category-name {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #333;
+  margin-top: 10px;
+  text-transform: uppercase;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+/* Responsive cho mobile */
+@media (max-width: 576px) {
+  .category-name {
+    font-size: 10px;
   }
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
+
+/* 2. Header: Nếu component Header của bạn có banner màu hồng bên trong */
+.header-pink-banner {
+  /* Thay vì margin, hãy dùng padding nếu bạn muốn màu nền hồng vẫn tràn ra lề, 
+     hoặc dùng margin nếu muốn cả khối hồng thu vào trong */
+  margin-left: 6.6% !important; 
+  margin-right: 6.6% !important;
 }
-p {
+
+/* 3. Xử lý Row để ảnh sản phẩm sát lề */
+.product-list-row {
+  /* Quan trọng: Bootstrap Row có margin âm -1.5rem (hoặc -0.75rem) 
+     Nó sẽ làm ảnh sản phẩm "nhô" ra ngoài lề 6.6% một chút. 
+     Ta phải đưa nó về 0 để mép ảnh thẳng hàng với mép chữ. */
+  /* margin-left: 0 !important;
+  margin-right: 0 !important; */
+  
+  /* Khoảng cách giữa các card sản phẩm */
+  --bs-gutter-x: 1.5rem; 
+}
+
+/* 4. Loại bỏ padding dư thừa của cột đầu và cuối trong row */
+/* Điều này giúp sản phẩm số 1 sát lề trái, sản phẩm số 4 sát lề phải */
+.product-list-row > .col-lg-3:first-child {
+  padding-left: 0 !important;
+}
+.product-list-row > .col-lg-3:last-child {
+  padding-right: 0 !important;
+}
+
+
+.pandora-container {
+  font-family: 'Arial', sans-serif;
+  color: #222;
+}
+
+/* Header style */
+.brand-header {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.kham-pha {
+  font-size: 14px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.brand-logo {
+  font-family: 'Playfair Display', serif; /* Hoặc font có chân tương tự Pandora */
+  font-weight: 700;
+  font-size: 80px;
+  letter-spacing: 12px;
+  line-height: 1;
   margin: 0;
+  text-transform: uppercase;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+/* Card style */
+.category-card {
+  border: none;
+  border-radius: 0;
+  margin-bottom: 30px;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.category-card img {
+  border-radius: 0; /* Ảnh 2 vuông vức, không bo góc */
+  width: 100%;
+  height: auto;
+}
+
+.category-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  text-align: left; /* Căn trái theo ảnh 2 */
+}
+
+.category-link {
+  color: #000;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  border-bottom: 1.5px solid #000; /* Đường gạch chân sát chữ */
+  display: inline-block;
+  padding-bottom: 2px;
+}
+
+.category-link:hover {
+  color: #333;
 }
