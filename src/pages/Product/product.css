@@ -1,0 +1,385 @@
+/* =========================================================
+   TỔNG HỢP CSS TOÀN DIỆN TRANG SẢN PHẨM (300+ LINES)
+   Project: Pandora Frontend - Standard Edition
+   ========================================================= */
+
+/* --- 0. KHAI BÁO BIẾN & RESET CƠ BẢN --- */
+:root {
+    --pandora-pink: #f4fb1;
+    --text-dark: #111;
+    --text-gray: #666;
+    --bg-light-gray: #f5f5f5;
+    --border-color: #ebebeb;
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- 1. KHU VỰC 4 DANH MỤC DƯỚI BANNER (CATEGORY SHOWCASE) --- */
+.category-showcase-container {
+    margin-bottom: 50px;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.category-box {
+    position: relative;
+    border-radius: 50%; /* Hình tròn theo phong cách Pandora */
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    cursor: pointer;
+    text-align: center;
+    background-color: var(--bg-light-gray);
+    transition: var(--transition-smooth);
+}
+
+.category-box:hover {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.category-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 15px;
+    transition: transform 0.5s ease;
+}
+
+.category-box:hover img {
+    transform: scale(1.1);
+}
+
+.category-title {
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dark);
+    text-transform: capitalize;
+}
+
+/* --- 2. BỐ CỤC CHÍNH (MAIN LAYOUT) --- */
+.product-page-main {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+.sidebar-filter-area {
+    width: 280px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 20px;
+}
+
+.product-list-area {
+    flex-grow: 1;
+}
+
+/* --- 3. CHI TIẾT SIDEBAR FILTER --- */
+/* Dropdown Sắp xếp */
+.sort-container {
+    border: 1px solid var(--border-color);
+    padding: 12px 15px;
+    margin-bottom: 25px;
+    position: relative;
+    cursor: pointer;
+}
+
+.sort-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-gray);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.sort-value {
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Các khối lọc Accordion */
+.filter-widget {
+    border-bottom: 1px solid var(--border-color);
+    padding: 20px 0;
+}
+
+.filter-widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.filter-widget-title {
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+/* Checkbox vuông đen */
+.filter-checkbox-item {
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+    cursor: pointer;
+}
+
+.filter-checkbox-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 1px solid #ccc;
+    margin-right: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.filter-checkbox-item input[type="checkbox"]:checked {
+    background-color: var(--text-dark);
+    border-color: var(--text-dark);
+}
+
+.filter-checkbox-item input[type="checkbox"]:checked::after {
+    content: '✓';
+    color: #fff;
+    position: absolute;
+    font-size: 12px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.filter-checkbox-item label {
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Chấm tròn chất liệu (Material Dots) */
+.material-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.material-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.material-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    box-shadow: inset 0 0 4px rgba(0,0,0,0.1);
+}
+
+.bg-silver { background: linear-gradient(135deg, #ddd 0%, #fff 100%); }
+.bg-gold { background: linear-gradient(135deg, #f3e0a1 0%, #ffd700 100%); }
+.bg-rosegold { background: linear-gradient(135deg, #f9d8d0 0%, #e0b0ff 100%); }
+
+/* Lưới Size 5 cột */
+.size-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.size-btn {
+    border: 1px solid var(--border-color);
+    padding: 8px 0;
+    text-align: center;
+    font-size: 12px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.size-btn:hover, .size-btn.active {
+    background-color: var(--text-dark);
+    color: #fff;
+    border-color: var(--text-dark);
+}
+
+/* --- 4. LƯỚI SẢN PHẨM & TOPBAR --- */
+.product-list-topbar {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 13px;
+    color: var(--text-gray);
+    margin-bottom: 20px;
+}
+
+.products-grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+/* --- 5. CHI TIẾT THẺ SẢN PHẨM (PRODUCT CARD) --- */
+.product-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition-smooth);
+}
+
+.product-image-area {
+    background-color: var(--bg-light-gray);
+    aspect-ratio: 1 / 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-image-area img {
+    width: 85%;
+    height: 85%;
+    object-fit: contain;
+    mix-blend-mode: multiply; /* Fix lỗi 2 màu nền */
+    transition: transform 0.6s ease;
+}
+
+.product-card:hover .product-image-area img {
+    transform: scale(1.1);
+}
+
+/* Badge Đặc quyền/Hot */
+.badge-exclusive {
+    position: absolute;
+    top: 12px;
+    left: 0;
+    background-color: #f8a5c2;
+    color: #fff;
+    padding: 4px 12px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    z-index: 5;
+}
+
+/* Nút thả tim wishlist */
+.wishlist-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    z-index: 5;
+    cursor: pointer;
+    color: var(--text-dark);
+}
+
+/* Nút XEM NHANH (Hover effect) */
+.quick-view-btn {
+    position: absolute;
+    bottom: -50px; /* Ẩn dưới khung */
+    left: 0;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: var(--text-dark);
+    border: none;
+    padding: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: var(--transition-smooth);
+    cursor: pointer;
+}
+
+.product-card:hover .quick-view-btn {
+    bottom: 0; /* Trượt lên khi hover */
+}
+
+/* Thông tin tên & giá (Bỏ sao đánh giá) */
+.product-info {
+    padding: 15px 0;
+}
+
+.product-color-options {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.color-dot-small {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+}
+
+.product-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dark);
+    line-height: 1.5;
+    margin-bottom: 8px;
+    text-decoration: none;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-price {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+/* --- 6. RESPONSIVE --- */
+@media (max-width: 1024px) {
+    .products-grid-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .product-page-main {
+        flex-direction: column;
+    }
+    .sidebar-filter-area {
+        width: 100%;
+    }
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+/* Đảm bảo khung lưới sản phẩm đồng nhất */
+.product-list-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 cột trên PC */
+    gap: 20px;
+}
+
+/* Ép khung ảnh vuông cho Card */
+.product-card-img-wrapper {
+    background-color: #f5f5f5;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.product-card-img-wrapper img {
+    max-width: 90%;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+}
