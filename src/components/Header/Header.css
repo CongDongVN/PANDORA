@@ -1,0 +1,16 @@
+/* Loại bỏ padding mặc định của nav-link để sát lề trái */
+.nav-link {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Hiệu ứng hover cho menu */
+.nav-item:hover .nav-link {
+  color: #ff9dae !important; /* Đổi màu khi hover */
+}
+
+/* Đảm bảo font chữ thanh thoát */
+body {
+  font-family: 'Arial', sans-serif;
+  text-transform: uppercase;
+}
