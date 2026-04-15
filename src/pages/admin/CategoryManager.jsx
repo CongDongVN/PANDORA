@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { BsSearch, BsPlusLg, BsPencilSquare, BsFolder, BsEye, BsX, BsArrowLeft, BsFilter, BsTrash } from 'react-icons/bs';
+import { 
+    BsSearch, BsPlusLg, BsPencilSquare, BsFolder, BsEye, BsX, BsArrowLeft, 
+    BsFilter, BsTrash, BsCloudUpload, BsFileEarmarkExcel, BsHddNetwork, 
+    BsFileEarmarkSpreadsheet, BsDatabase 
+} from 'react-icons/bs';
 
 const CategoryManager = () => {
     // ========================================================================
     // 1. STATE: DỮ LIỆU
     // ========================================================================
-    // Danh sách Danh mục
     const [categories, setCategories] = useState([
         { id: 'CAT-01', name: 'Nhẫn', count: 124, status: 'Hoạt động' },
         { id: 'CAT-02', name: 'Dây chuyền', count: 85, status: 'Hoạt động' },
@@ -14,35 +17,36 @@ const CategoryManager = () => {
         { id: 'CAT-05', name: 'Charm', count: 342, status: 'Hoạt động' },
     ]);
 
-    // Danh sách Sản phẩm phân theo ID Danh mục
     const [products, setProducts] = useState({
-        'CAT-01': [ // Nhẫn
+        'CAT-01': [ 
             { id: 'PRD-101', name: 'Nhẫn Bạc Đính Đá CZ', qty: 50, material: 'Bạc 925', sold: 120, price: '$45.00', status: 'Còn hàng' },
             { id: 'PRD-102', name: 'Nhẫn Vàng Hồng 14k', qty: 12, material: 'Vàng 14k', sold: 45, price: '$150.00', status: 'Còn hàng' },
-            { id: 'PRD-103', name: 'Nhẫn Kim Cương Vô Cực', qty: 0, material: 'Bạch kim', sold: 8, price: '$890.00', status: 'Hết hàng' },
         ],
-        'CAT-02': [ // Dây chuyền
+        'CAT-02': [ 
             { id: 'PRD-201', name: 'Dây chuyền Trái tim', qty: 30, material: 'Bạc 925', sold: 89, price: '$55.00', status: 'Còn hàng' },
-            { id: 'PRD-202', name: 'Dây chuyền Ngọc Trai', qty: 5, material: 'Ngọc trai thật', sold: 21, price: '$200.00', status: 'Còn hàng' },
         ],
-        'CAT-03': [ // Bông tai
+        'CAT-03': [ 
             { id: 'PRD-301', name: 'Bông tai Nụ Đá Xanh', qty: 100, material: 'Bạc 925', sold: 340, price: '$35.00', status: 'Còn hàng' },
         ],
-        'CAT-04': [ // Vòng tay
+        'CAT-04': [ 
             { id: 'PRD-401', name: 'Vòng tay Basic Pandora', qty: 80, material: 'Bạc 925', sold: 560, price: '$65.00', status: 'Còn hàng' },
         ],
-        'CAT-05': [ // Charm
+        'CAT-05': [ 
             { id: 'PRD-501', name: 'Charm Gia đình', qty: 200, material: 'Bạc 925', sold: 890, price: '$25.00', status: 'Còn hàng' },
-            { id: 'PRD-502', name: 'Charm Vương miện Vàng', qty: 0, material: 'Vàng 18k', sold: 12, price: '$120.00', status: 'Hết hàng' },
         ]
     });
 
     // ========================================================================
     // 2. STATE: ĐIỀU HƯỚNG & POPUP
     // ========================================================================
-    const [selectedCategory, setSelectedCategory] = useState(null); // chuyển đổi màn hình 
-    const [editingCategory, setEditingCategory] = useState(null); // Cho popup sửa Danh mục
-    const [editingProduct, setEditingProduct] = useState(null); // Cho popup sửa Sản phẩm
+    const [selectedCategory, setSelectedCategory] = useState(null); 
+    const [editingCategory, setEditingCategory] = useState(null); 
+    const [editingProduct, setEditingProduct] = useState(null); 
+    
+    // --- STATE MỚI CHO THÊM SP & IMPORT ---
+    const [isAddingProduct, setIsAddingProduct] = useState(false);
+    const [showImportModal, setShowImportModal] = useState(false);
+    const [newProduct, setNewProduct] = useState({ name: '', qty: '', material: '', price: '', status: 'Còn hàng' });
 
     // --- HÀM LẤY MÀU CHO TRẠNG THÁI ---
     const getStatusStyle = (status) => {
@@ -52,7 +56,7 @@ const CategoryManager = () => {
     };
 
     // ========================================================================
-    // 3. CÁC HÀM XỬ LÝ SỰ KIỆN (ACTIONS)
+    // 3. CÁC HÀM XỬ LÝ SỰ KIỆN
     // ========================================================================
     
     // --- CHO DANH MỤC ---
@@ -64,23 +68,55 @@ const CategoryManager = () => {
     };
 
     // --- CHO SẢN PHẨM ---
-    const handleViewCategoryDetails = (category) => setSelectedCategory(category); // Chuyển sang trang chi tiết
-    const handleBackToCategories = () => setSelectedCategory(null); // Nút quay lại trang danh mục
+    const handleViewCategoryDetails = (category) => setSelectedCategory(category); 
+    const handleBackToCategories = () => setSelectedCategory(null); 
 
     const handleEditProductClick = (product) => setEditingProduct(product);
     const handleProductInputChange = (e) => setEditingProduct({ ...editingProduct, [e.target.name]: e.target.value });
     const handleSaveProduct = () => {
-        // Cập nhật sản phẩm trong mảng tương ứng với Category hiện tại
         const catId = selectedCategory.id;
-        const updatedProductsArray = products[catId].map(p => 
-            p.id === editingProduct.id ? editingProduct : p
-        );
+        const updatedProductsArray = products[catId].map(p => p.id === editingProduct.id ? editingProduct : p);
         setProducts({ ...products, [catId]: updatedProductsArray });
         setEditingProduct(null);
     };
 
+    // --- TẠO MỚI SẢN PHẨM ---
+    const handleNewProductChange = (e) => {
+        setNewProduct({ ...newProduct, [e.target.name]: e.target.value });
+    };
+
+    const handleSaveNewProduct = () => {
+        if(!newProduct.name || !newProduct.price) {
+            alert("Vui lòng nhập ít nhất Tên và Giá sản phẩm!");
+            return;
+        }
+
+        const catId = selectedCategory.id;
+        // Tạo ID ảo ngẫu nhiên
+        const newId = `PRD-${Math.floor(Math.random() * 900) + 100}`; 
+        
+        const productToAdd = { 
+            ...newProduct, 
+            id: newId, 
+            sold: 0 // Mới thêm thì số lượng đã bán bằng 0
+        };
+        
+        const updatedCategoryProducts = [...(products[catId] || []), productToAdd];
+        
+        setProducts({ ...products, [catId]: updatedCategoryProducts });
+        setIsAddingProduct(false);
+        // Reset form
+        setNewProduct({ name: '', qty: '', material: '', price: '', status: 'Còn hàng' });
+    };
+
+    // --- GIẢ LẬP HÀNH ĐỘNG IMPORT ---
+    const simulateImport = (type) => {
+        alert(`Đang kết nối tới ${type} để đồng bộ sản phẩm... (Tính năng Backend)`);
+        setShowImportModal(false);
+    };
+
     // ========================================================================
-    // 4. GIAO DIỆN HIỂN THỊ CHI TIẾT DANH SÁCH SẢN PHẨM (MÀN HÌNH 2)
+    // 4. GIAO DIỆN MÀN HÌNH 2 (CHI TIẾT DANH MỤC)
     // ========================================================================
     if (selectedCategory) {
         const currentProducts = products[selectedCategory.id] || [];
@@ -101,11 +137,11 @@ const CategoryManager = () => {
                         <h4 className="fw-bold mb-1">
                             Sản phẩm thuộc: <span style={{ color: '#5932ea' }}>{selectedCategory.name}</span>
                         </h4>
-                        <p className="text-muted mb-0" style={{ fontSize: '0.9rem' }}>Các loại sản phẩm PANDORA</p>
+                        <p className="text-muted mb-0" style={{ fontSize: '0.9rem' }}>Quản lý mặt hàng trong danh mục này</p>
                     </div>
                 </div>
 
-                {/* Thanh công cụ: Tìm kiếm, Lọc, Thêm sản phẩm */}
+                {/* Thanh công cụ: Tìm kiếm, Lọc, Import, Thêm sản phẩm */}
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <div className="d-flex gap-3 align-items-center">
                         <div className="input-group bg-light rounded-3" style={{ width: '280px', border: 'none' }}>
@@ -117,9 +153,23 @@ const CategoryManager = () => {
                         </button>
                     </div>
                     
-                    <button className="btn text-white fw-bold d-flex align-items-center px-4" style={{ backgroundColor: '#5932ea', borderRadius: '8px' }}>
-                        <BsPlusLg className="me-2 fw-bold" /> Thêm sản phẩm
-                    </button>
+                    {/* CÁC NÚT HÀNH ĐỘNG MỚI */}
+                    <div className="d-flex gap-2">
+                        <button 
+                            className="btn fw-bold d-flex align-items-center px-3 shadow-none" 
+                            style={{ border: '2px solid #5932ea', color: '#5932ea', borderRadius: '8px', backgroundColor: '#fff' }}
+                            onClick={() => setShowImportModal(true)}
+                        >
+                            <BsCloudUpload className="me-2 fw-bold fs-5" /> Import Dữ Liệu
+                        </button>
+                        <button 
+                            className="btn text-white fw-bold d-flex align-items-center px-4 shadow-none" 
+                            style={{ backgroundColor: '#5932ea', borderRadius: '8px' }}
+                            onClick={() => setIsAddingProduct(true)}
+                        >
+                            <BsPlusLg className="me-2 fw-bold" /> Thêm sản phẩm
+                        </button>
+                    </div>
                 </div>
 
                 {/* Bảng danh sách Sản phẩm */}
@@ -139,7 +189,7 @@ const CategoryManager = () => {
                         </thead>
                         <tbody>
                             {currentProducts.length === 0 ? (
-                                <tr><td colSpan="8" className="text-center py-4 text-muted">Chưa có sản phẩm nào trong danh mục này.</td></tr>
+                                <tr><td colSpan="8" className="text-center py-5 text-muted fw-bold">Chưa có sản phẩm nào trong danh mục này. Thêm mới ngay!</td></tr>
                             ) : (
                                 currentProducts.map((product) => {
                                     const statusStyle = getStatusStyle(product.status);
@@ -172,7 +222,103 @@ const CategoryManager = () => {
                     </table>
                 </div>
 
-                {/* MODAL SỬA SẢN PHẨM */}
+                {/* ========================================================= */}
+                {/* MODAL 1: THÊM SẢN PHẨM MỚI */}
+                {/* ========================================================= */}
+                {isAddingProduct && (
+                    <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
+                        <div className="bg-white rounded-4 shadow-lg p-4" style={{ width: '500px', maxWidth: '90%' }}>
+                            <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                                <h5 className="fw-bold mb-0 text-dark">Thêm sản phẩm mới</h5>
+                                <button className="btn btn-sm btn-light rounded-circle" onClick={() => setIsAddingProduct(false)}><BsX className="fs-4" /></button>
+                            </div>
+                            
+                            <div className="mb-3">
+                                <label className="form-label fw-bold text-muted" style={{ fontSize: '0.9rem' }}>Tên sản phẩm <span className="text-danger">*</span></label>
+                                <input type="text" className="form-control shadow-none" name="name" placeholder="VD: Nhẫn Bạc Nữ Đính Đá" value={newProduct.name} onChange={handleNewProductChange} />
+                            </div>
+                            
+                            <div className="row mb-3">
+                                <div className="col-6">
+                                    <label className="form-label fw-bold text-muted" style={{ fontSize: '0.9rem' }}>Chất liệu</label>
+                                    <input type="text" className="form-control shadow-none" name="material" placeholder="VD: Bạc 925" value={newProduct.material} onChange={handleNewProductChange} />
+                                </div>
+                                <div className="col-6">
+                                    <label className="form-label fw-bold text-muted" style={{ fontSize: '0.9rem' }}>Giá bán <span className="text-danger">*</span></label>
+                                    <input type="text" className="form-control shadow-none" name="price" placeholder="VD: $45.00" value={newProduct.price} onChange={handleNewProductChange} />
+                                </div>
+                            </div>
+
+                            <div className="row mb-4">
+                                <div className="col-6">
+                                    <label className="form-label fw-bold text-muted" style={{ fontSize: '0.9rem' }}>Số lượng nhập kho</label>
+                                    <input type="number" className="form-control shadow-none" name="qty" placeholder="0" value={newProduct.qty} onChange={handleNewProductChange} />
+                                </div>
+                                <div className="col-6">
+                                    <label className="form-label fw-bold text-muted" style={{ fontSize: '0.9rem' }}>Trạng thái</label>
+                                    <select className="form-select shadow-none" name="status" value={newProduct.status} onChange={handleNewProductChange}>
+                                        <option value="Còn hàng">Còn hàng</option>
+                                        <option value="Hết hàng">Hết hàng</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="d-flex justify-content-end gap-2 pt-3 border-top">
+                                <button className="btn btn-light fw-bold px-4" onClick={() => setIsAddingProduct(false)}>Hủy</button>
+                                <button className="btn text-white fw-bold px-4" style={{ backgroundColor: '#5932ea' }} onClick={handleSaveNewProduct}>Thêm vào kho</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ========================================================= */}
+                {/* MODAL 2: TÙY CHỌN IMPORT */}
+                {/* ========================================================= */}
+                {showImportModal && (
+                    <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
+                        <div className="bg-white rounded-4 shadow-lg p-4" style={{ width: '450px', maxWidth: '90%' }}>
+                            <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                                <h5 className="fw-bold mb-0">Chọn nguồn Import dữ liệu</h5>
+                                <button className="btn btn-sm btn-light rounded-circle" onClick={() => setShowImportModal(false)}><BsX className="fs-4" /></button>
+                            </div>
+
+                            <p className="text-muted mb-4" style={{ fontSize: '0.9rem' }}>Hệ thống hỗ trợ đồng bộ hàng loạt sản phẩm từ các nền tảng sau:</p>
+
+                            <div className="row g-3 mb-4">
+                                {/* Option Excel */}
+                                <div className="col-6">
+                                    <button className="btn btn-light border w-100 p-3 d-flex flex-column align-items-center shadow-none hover-import" onClick={() => simulateImport('File Excel (.xlsx)')}>
+                                        <BsFileEarmarkExcel className="fs-1 mb-2" style={{ color: '#107c41' }} />
+                                        <span className="fw-bold text-dark" style={{ fontSize: '0.9rem' }}>File Excel</span>
+                                    </button>
+                                </div>
+                                {/* Option Google Sheets */}
+                                <div className="col-6">
+                                    <button className="btn btn-light border w-100 p-3 d-flex flex-column align-items-center shadow-none hover-import" onClick={() => simulateImport('Google Sheets')}>
+                                        <BsFileEarmarkSpreadsheet className="fs-1 mb-2" style={{ color: '#0f9d58' }} />
+                                        <span className="fw-bold text-dark" style={{ fontSize: '0.9rem' }}>Google Sheets</span>
+                                    </button>
+                                </div>
+                                {/* Option API */}
+                                <div className="col-6">
+                                    <button className="btn btn-light border w-100 p-3 d-flex flex-column align-items-center shadow-none hover-import" onClick={() => simulateImport('Hệ thống API')}>
+                                        <BsHddNetwork className="fs-1 mb-2" style={{ color: '#5932ea' }} />
+                                        <span className="fw-bold text-dark" style={{ fontSize: '0.9rem' }}>Đồng bộ qua API</span>
+                                    </button>
+                                </div>
+                                {/* Option MySQL */}
+                                <div className="col-6">
+                                    <button className="btn btn-light border w-100 p-3 d-flex flex-column align-items-center shadow-none hover-import" onClick={() => simulateImport('Cơ sở dữ liệu MySQL')}>
+                                        <BsDatabase className="fs-1 mb-2" style={{ color: '#f29111' }} />
+                                        <span className="fw-bold text-dark" style={{ fontSize: '0.9rem' }}>Direct MySQL</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* MODAL SỬA SẢN PHẨM (CŨ) */}
                 {editingProduct && (
                     <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
                         <div className="bg-white rounded-4 shadow-lg p-4" style={{ width: '450px', maxWidth: '90%' }}>
@@ -214,11 +360,10 @@ const CategoryManager = () => {
     }
 
     // ========================================================================
-    // 5. GIAO DIỆN HIỂN THỊ DANH SÁCH DANH MỤC TỔNG (MÀN HÌNH 1 - GỐC)
+    // 5. GIAO DIỆN MÀN HÌNH 1 (DANH SÁCH DANH MỤC)
     // ========================================================================
     return (
         <div className="card border-0 shadow-sm rounded-4 p-4 position-relative">
-            {/* Header & Thanh công cụ */}
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h4 className="fw-bold mb-1 d-flex align-items-center">
@@ -237,7 +382,6 @@ const CategoryManager = () => {
                 </div>
             </div>
 
-            {/* Bảng Danh mục */}
             <div className="table-responsive">
                 <table className="table table-hover align-middle mb-0">
                     <thead>
@@ -265,12 +409,7 @@ const CategoryManager = () => {
                                         </span>
                                     </td>
                                     <td className="py-3 text-end">
-                                        {/* NÚT XEM CHI TIẾT: Chuyển sang màn hình danh sách sản phẩm */}
-                                        <button 
-                                            className="btn btn-sm btn-light border me-2 shadow-none" 
-                                            title="Xem chi tiết sản phẩm"
-                                            onClick={() => handleViewCategoryDetails(category)}
-                                        >
+                                        <button className="btn btn-sm btn-light border me-2 shadow-none" title="Xem chi tiết sản phẩm" onClick={() => handleViewCategoryDetails(category)}>
                                             <BsEye className="text-primary" />
                                         </button>
                                         <button className="btn btn-sm btn-light border shadow-none" title="Chỉnh sửa danh mục" onClick={() => handleEditCatClick(category)}>
