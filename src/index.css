@@ -1,0 +1,277 @@
+/* 1. Đảm bảo toàn bộ ứng dụng dùng chung một hệ quy chiếu */
+@import url('https://fonts.googleapis.com/css2?family=Optima&family=Playfair+Display:wght@400;700&display=swap');
+.px-custom {
+  padding-left: 6.6% !important; 
+  padding-right: 6.6% !important;
+}
+.category-item {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.category-item:hover {
+  transform: translateY(-5px); /* Hiệu ứng nhấc lên nhẹ khi di chuột vào */
+}
+
+.category-image-wrapper {
+  background-color: #fff; /* Nền trắng sạch sẽ */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1; /* Giữ khung hình vuông */
+  overflow: hidden;
+}
+
+.category-img {
+  max-height: 80%; /* Giữ ảnh không quá to, tạo khoảng trắng sang trọng */
+  object-fit: contain;
+}
+
+.category-name {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #333;
+  margin-top: 10px;
+  text-transform: uppercase;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 576px) {
+  .category-name {
+    font-size: 10px;
+  }
+}
+
+/* 2. Header: Nếu component Header của bạn có banner màu hồng bên trong */
+.header-pink-banner {
+  /* Thay vì margin, hãy dùng padding nếu bạn muốn màu nền hồng vẫn tràn ra lề, 
+     hoặc dùng margin nếu muốn cả khối hồng thu vào trong */
+  margin-left: 6.6% !important; 
+  margin-right: 6.6% !important;
+}
+
+/* 3. Xử lý Row để ảnh sản phẩm sát lề */
+.product-list-row {
+  /* Quan trọng: Bootstrap Row có margin âm -1.5rem (hoặc -0.75rem) 
+     Nó sẽ làm ảnh sản phẩm "nhô" ra ngoài lề 6.6% một chút. 
+     Ta phải đưa nó về 0 để mép ảnh thẳng hàng với mép chữ. */
+  /* margin-left: 0 !important;
+  margin-right: 0 !important; */
+  
+  /* Khoảng cách giữa các card sản phẩm */
+  --bs-gutter-x: 1.5rem; 
+}
+
+/* 4. Loại bỏ padding dư thừa của cột đầu và cuối trong row */
+/* Điều này giúp sản phẩm số 1 sát lề trái, sản phẩm số 4 sát lề phải */
+.product-list-row > .col-lg-3:first-child {
+  padding-left: 0 !important;
+}
+.product-list-row > .col-lg-3:last-child {
+  padding-right: 0 !important;
+}
+
+
+.pandora-container {
+  font-family: 'Arial', sans-serif;
+  color: #222;
+}
+
+/* Header style */
+.brand-header {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.kham-pha {
+  font-size: 14px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.brand-logo {
+  font-family: 'Playfair Display', serif; /* Hoặc font có chân tương tự Pandora */
+  font-weight: 700;
+  font-size: 80px;
+  letter-spacing: 12px;
+  line-height: 1;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* Card style */
+.category-card {
+  border: none;
+  border-radius: 0;
+  margin-bottom: 30px;
+}
+
+.category-card img {
+  border-radius: 0; /* Ảnh 2 vuông vức, không bo góc */
+  width: 100%;
+  height: auto;
+}
+
+.category-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  text-align: left; /* Căn trái theo ảnh 2 */
+}
+
+.category-link {
+  color: #000;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  border-bottom: 1.5px solid #000; /* Đường gạch chân sát chữ */
+  display: inline-block;
+  padding-bottom: 2px;
+}
+
+.category-link:hover {
+  color: #333;
+}
+.login-page-container {
+    background-color: #fff;
+    font-family: 'Arial', sans-serif;
+}
+
+.login-main-title {
+    font-weight: 800;
+    letter-spacing: 1px;
+    font-size: 28px;
+}
+
+.login-subtitle {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Tùy chỉnh Tabs */
+.custom-tabs .nav-link {
+    color: #999 !important;
+    font-weight: bold;
+    border: none !important;
+    border-bottom: 2px solid #dee2e6 !important;
+}
+
+.custom-tabs .nav-link.active {
+    color: #000 !important;
+    border-bottom: 3px solid #000 !important;
+    background: transparent !important;
+}
+
+.auth-card {
+    border: 1px solid #dee2e6;
+}
+
+/* Tùy chỉnh Input */
+.custom-input {
+    border-radius: 0;
+    border: 1px solid #ced4da;
+    height: 50px;
+    padding-top: 15px;
+}
+
+.floating-label {
+    font-size: 11px;
+    font-weight: bold;
+    position: absolute;
+    top: 5px;
+    left: 12px;
+    z-index: 5;
+    color: #666;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #333;
+}
+
+.forgot-link {
+    font-size: 13px;
+    text-decoration: underline;
+}
+
+.login-btn {
+    border-radius: 4px;
+    letter-spacing: 1px;
+}
+
+.divider-text {
+    position: relative;
+    font-weight: bold;
+}
+
+.google-btn {
+    background-color: #ffcdd2; /* Màu hồng nhạt như hình */
+    border: none;
+    color: #000;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.facebook-btn {
+    background-color: #1877f2;
+    border: none;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.google-btn:hover { background-color: #ef9a9a; color: #000; }
+
+/* Tái sử dụng các class từ trang Login */
+.auth-card {
+    border: 1px solid #dee2e6;
+    border-top: none; /* Chỉ hiện viền 3 cạnh dưới Tab */
+}
+
+.custom-input {
+    border-radius: 0 !important;
+    border: 1px solid #ced4da !important;
+    height: 50px;
+    padding-top: 15px !important;
+}
+
+.floating-label {
+    font-size: 11px;
+    font-weight: bold;
+    position: absolute;
+    top: 5px;
+    left: 12px;
+    z-index: 5;
+    color: #666;
+}
+
+
+.divider-text span {
+    background: #fff;
+    padding: 0 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.divider-text::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #dee2e6;
+    z-index: 0;
+}
