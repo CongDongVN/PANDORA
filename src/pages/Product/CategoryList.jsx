@@ -1,14 +1,14 @@
 import React from 'react';
-import ProductCard from './ProductCard'; // Đảm bảo import đúng thẻ sản phẩm
+import { categories } from '../../data/categoriesData'; 
 
 const CategoryList = ({ 
   title, 
-  data, 
-  showCategories = true, // Mặc định là hiện, trang nào muốn ẩn thì truyền false
+  showCategories = true, 
   categoryType 
 }) => {
 
-  // Hàm đổi tên động cho Breadcrumb
+  const currentSubCategories = categories.filter(cat => cat.type === categoryType);
+
   const getDisplayName = (type) => {
     switch (type) {
       case 'vong-tay': return 'Vòng tay';
@@ -23,7 +23,7 @@ const CategoryList = ({
   return (
     <div className="category-container text-start mb-5 container">
       
-      {/* 1. BREADCRUMB - Chỉ hiện khi showCategories = true */}
+      {/* BREADCRUMB */}
       {showCategories && (
         <div className="breadcrumb mt-4 mb-4" style={{ fontSize: '14px' }}>
           <span className="text-secondary">Trang chủ</span>
@@ -32,26 +32,26 @@ const CategoryList = ({
         </div>
       )}
 
-      {/* 2. TIÊU ĐỀ TRANG (Ví dụ: TẤT CẢ BỘ SƯU TẬP) */}
-      {!showCategories && (
-        <h2 className="text-center text-uppercase fw-bold mt-5 mb-5">{title}</h2>
+      {/* DANH MỤC TRÒN */}
+      {showCategories && currentSubCategories.length > 0 && (
+        <div className="category-showcase-container pt-3">
+          <div className="category-grid">
+            
+            {currentSubCategories.map((cat) => (
+              <div key={cat.id} className="d-flex flex-column align-items-center">
+                
+                <div className="category-box">
+                  <img src={cat.image} alt={cat.name} />
+                </div>
+                
+                <div className="category-title">{cat.name}</div>
+                
+              </div>
+            ))}
+
+          </div>
+        </div>
       )}
-
-      {/* 3. KHU VỰC BỘ LỌC (FILTER) - Luôn hiển thị */}
-      <div className="filter-bar mb-4 border-bottom pb-3">
-        <button className="btn btn-outline-dark btn-sm fw-bold">BỘ LỌC ▽</button>
-      </div>
-
-      {/* 4. DANH SÁCH SẢN PHẨM - Hiển thị 4 cột ngang */}
-      <div className="product-list-grid">
-        {data && data.length > 0 ? (
-          data.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))
-        ) : (
-          <p className="text-center w-100">Đang cập nhật sản phẩm...</p>
-        )}
-      </div>
 
     </div>
   );

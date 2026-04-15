@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom"; // ĐÃ XÓA 'Link' ĐỂ TRÁNH LỖI WARNING
 
 // Import các trang
 import Collection from './pages/Collection/collection';
@@ -18,6 +18,9 @@ import "./App.css";
 function App() {
   return (
     <BrowserRouter>
+      {/* Đã xóa thanh Menu Test. 
+        Component Header thực tế sẽ được chèn vào đây hoặc bọc bên ngoài Routes bởi người phụ trách.
+      */}
       <Routes>
         {/* 2 Trang Tổng hợp: Hiển thị 5 loại sản phẩm */}
         <Route path="/collection" element={<Collection />} />

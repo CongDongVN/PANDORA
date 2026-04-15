@@ -4,39 +4,39 @@ import SidebarFilter from "../Product/SidebarFilter";
 import ProductList from "../Product/ProductList";
 import "../Product/product.css";
 
-const NhanPage = () => {
-  // 1. Chỉ định rõ loại danh mục cho trang này là 'nhan'
-  const categoryType = "nhan";
-
-  // 2. Cài đặt đường dẫn ảnh banner dành riêng cho trang Nhẫn
+const NhanPage = () => { // Đổi tên Component tương ứng (VongTayPage, CharmPage...)
+  const categoryType = "nhan"; // Đổi 'nhan', 'charm', 'day-chuyen'...
   const currentBanner = "/banners/banner-nhan.jpg";
 
   return (
     <div className="product-page-container">
-      {/* KHU VỰC BANNER */}
+      {/* 1. KHU VỰC BANNER */}
       <section className="banner-section mb-4">
-        <img src={currentBanner} alt="Banner Nhẫn" className="w-100 d-block" />
+        <img src={currentBanner} alt={`Banner ${categoryType}`} className="img-fluid w-100 d-block" />
       </section>
 
       <div className="container">
-        {/* KHU VỰC DANH MỤC CON */}
+        {/* 2. KHU VỰC DANH MỤC TRÒN */}
         <section className="category-section">
-          {/* Truyền tờ giấy ghi chú 'nhan' cho CategoryList */}
           <CategoryList categoryType={categoryType} />
         </section>
 
-        {/* KHU VỰC NỘI DUNG CHÍNH (Sidebar + Lưới sản phẩm) */}
-        <section className="main-content-section d-flex align-items-start gap-4 mt-4">
-          {/* Bộ lọc bên trái */}
-          <aside className="sidebar" style={{ width: "25%" }}>
-            <SidebarFilter />
-          </aside>
+        {/* 3. KHU VỰC CHÍNH (Sử dụng chuẩn Bootstrap Grid cho Reponsive) */}
+        <section className="main-content-section mt-5">
+          <div className="row">
+            
+            {/* CỘT TRÁI: SIDEBAR (Chiếm 3/12) */}
+            <aside className="col-lg-3 col-md-4 mb-4">
+              {/* Class .sidebar-filter-wrapper ở trong file CSS đã có sẵn sticky */}
+              <SidebarFilter />
+            </aside>
 
-          {/* Danh sách sản phẩm bên phải */}
-          <main className="product-list-area" style={{ width: "75%" }}>
-            {/* Truyền tờ giấy ghi chú 'vong-tay' cho ProductList */}
-            <ProductList categoryType={categoryType} />
-          </main>
+            {/* CỘT PHẢI: LƯỚI SẢN PHẨM (Chiếm 9/12) */}
+            <main className="col-lg-9 col-md-8">
+              <ProductList categoryType={categoryType} />
+            </main>
+            
+          </div>
         </section>
       </div>
     </div>
