@@ -1,12 +1,12 @@
 // 1. Import component Header của bạn
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header/Header'; 
+import Header from './components/Header/Header.jsx'; 
 import BannerSlider from "./components/BannerSlider/BannerSlider.jsx";
 import ProductCard from "./components/ProductCard/ProductCard.jsx";
 import CategoryList from "./components/CategoryList/CategoryList.jsx";
 import VideoSection from "./components/VideoSection/VideoSection.jsx";
-import FeatureGrid from './components/FeatureGrid/FeatureGrid';
-import ExplorePandora from './components/ExplorePandora/ExplorePandora';
+import FeatureGrid from './components/FeatureGrid/FeatureGrid.jsx';
+import ExplorePandora from './components/ExplorePandora/ExplorePandora.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import LoginPage from './pages/Login/Login.jsx';
 import RegisterPage from './pages/Register/Register.jsx';
