@@ -47,7 +47,7 @@ const productsData = [
     hasEngraving: true,
     colors: ["#silver", "#gold"]
   },
-   {
+  {
     id: 3,
     tag: "A Symbol Of VietNam",
     image: "./assets/img/charm3.png",
