@@ -1,18 +1,17 @@
-import React, { useState } from 'react'; // BƯỚC QUAN TRỌNG: Import thêm useState
-import ProductCard from './ProductCard';
-import { products } from '../../data/categoriesData';
-import './product.css';
+import React, { useState } from "react"; // BƯỚC QUAN TRỌNG: Import thêm useState
+import ProductCard from "./ProductCard";
+import { products } from "../../data/categoriesData";
+import "./product.css";
 
 const ProductList = ({ categoryType, data }) => {
-  
   // 1. TẠO STATE QUẢN LÝ SỐ LƯỢNG HIỂN THỊ (Mặc định là 12)
   const [visibleCount, setVisibleCount] = useState(12);
 
   // Logic lọc dữ liệu (Giữ nguyên của bạn)
   let filteredProducts = data;
   if (!filteredProducts) {
-    filteredProducts = categoryType 
-      ? products.filter(product => product.type === categoryType)
+    filteredProducts = categoryType
+      ? products.filter((product) => product.type === categoryType)
       : products;
   }
 
@@ -22,16 +21,20 @@ const ProductList = ({ categoryType, data }) => {
 
   // 3. HÀM XỬ LÝ KHI BẤM NÚT "XEM THÊM"
   const handleLoadMore = () => {
-    setVisibleCount(prevCount => prevCount + 12); // Cộng thêm 12 vào số lượng hiện tại
+    setVisibleCount((prevCount) => prevCount + 12); // Cộng thêm 12 vào số lượng hiện tại
   };
 
   return (
     <div className="product-list-area">
-
       {/* THANH TOPBAR */}
       <div className="product-list-topbar mb-3">
-        <span className="product-count" style={{ fontSize: '14px', fontWeight: '500', color: '#555' }}>
-          Đang hiển thị <strong style={{ color: '#111' }}>{productsToShow.length}</strong> / {filteredProducts.length} sản phẩm
+        <span
+          className="product-count"
+          style={{ fontSize: "14px", fontWeight: "500", color: "#555" }}
+        >
+          Đang hiển thị{" "}
+          <strong style={{ color: "#111" }}>{productsToShow.length}</strong> /{" "}
+          {filteredProducts.length} sản phẩm
         </span>
       </div>
 
@@ -43,7 +46,10 @@ const ProductList = ({ categoryType, data }) => {
             <ProductCard key={product.id} product={product} />
           ))
         ) : (
-          <div className="text-center w-100 py-5" style={{ gridColumn: '1 / -1' }}>
+          <div
+            className="text-center w-100 py-5"
+            style={{ gridColumn: "1 / -1" }}
+          >
             <p className="text-muted">Không tìm thấy sản phẩm nào.</p>
           </div>
         )}
@@ -58,7 +64,6 @@ const ProductList = ({ categoryType, data }) => {
           </button>
         </div>
       )}
-      
     </div>
   );
 };

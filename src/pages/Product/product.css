@@ -524,3 +524,16 @@
     display: none; /* Trải nghiệm Mobile thường không có trỏ chuột Hover nên ẩn nút này */
   }
 }
+/* Đảm bảo thẻ bọc ngoài cùng của bạn luôn full viền và không bị flex ép trái */
+.product-page-container {
+    width: 100%;
+    display: block !important;
+}
+
+/* Ép cái hộp .container bên TRONG trang của bạn phải nằm giữa */
+.product-page-container .container,
+.product-detail-page.container {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    float: none !important; /* Chống lại các lệnh float đẩy sang trái */
+}
