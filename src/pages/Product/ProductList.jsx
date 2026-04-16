@@ -1,50 +1,63 @@
-import React from 'react';
+import React, { useState } from 'react'; // BƯỚC QUAN TRỌNG: Import thêm useState
 import ProductCard from './ProductCard';
 import { products } from '../../data/categoriesData';
 import './product.css';
 
 const ProductList = ({ categoryType, data }) => {
   
-  // LOGIC CẬP NHẬT: 
-  // 1. Nếu trang cha truyền vào 'data' (dùng cho Collection/Jewelry), ta dùng luôn data đó.
-  // 2. Nếu không, ta mới thực hiện lọc theo 'categoryType' (dùng cho 5 trang đơn).
-  // 3. Nếu cả hai đều không có, ta hiển thị toàn bộ products.
-  
-  let filteredProducts = data;
+  // 1. TẠO STATE QUẢN LÝ SỐ LƯỢNG HIỂN THỊ (Mặc định là 12)
+  const [visibleCount, setVisibleCount] = useState(12);
 
+  // Logic lọc dữ liệu (Giữ nguyên của bạn)
+  let filteredProducts = data;
   if (!filteredProducts) {
     filteredProducts = categoryType 
       ? products.filter(product => product.type === categoryType)
       : products;
   }
 
+  // 2. CHỈ LẤY ĐÚNG SỐ LƯỢNG SẢN PHẨM CẦN HIỂN THỊ
+  // Hàm slice(0, 12) sẽ cắt từ vị trí 0 đến 12. Khi bấm xem thêm nó sẽ cắt từ 0 đến 24...
+  const productsToShow = filteredProducts.slice(0, visibleCount);
+
+  // 3. HÀM XỬ LÝ KHI BẤM NÚT "XEM THÊM"
+  const handleLoadMore = () => {
+    setVisibleCount(prevCount => prevCount + 12); // Cộng thêm 12 vào số lượng hiện tại
+  };
+
   return (
     <div className="product-list-area">
 
-      {/* THANH TOPBAR: Hiển thị số lượng sản phẩm thực tế sau khi lọc */}
-      <div className="product-list-topbar">
-        <span className="product-count">
-          Đang hiển thị <strong>{filteredProducts.length}</strong> sản phẩm
+      {/* THANH TOPBAR */}
+      <div className="product-list-topbar mb-3">
+        <span className="product-count" style={{ fontSize: '14px', fontWeight: '500', color: '#555' }}>
+          Đang hiển thị <strong style={{ color: '#111' }}>{productsToShow.length}</strong> / {filteredProducts.length} sản phẩm
         </span>
-        <select className="sort-dropdown">
-          <option value="new">Mới nhất</option>
-          <option value="price-asc">Giá: Thấp đến Cao</option>
-          <option value="price-desc">Giá: Cao đến Thấp</option>
-        </select>
       </div>
 
-      {/* LƯỚI SẢN PHẨM: Ép đúng cấu trúc Grid đã học */}
-      <div className="products-grid-container">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
+      {/* LƯỚI SẢN PHẨM */}
+      <div className="product-list-grid">
+        {productsToShow.length > 0 ? (
+          // Chú ý: Map qua mảng productsToShow thay vì mảng gốc
+          productsToShow.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))
         ) : (
-          <div className="text-center w-100 py-5">
+          <div className="text-center w-100 py-5" style={{ gridColumn: '1 / -1' }}>
             <p className="text-muted">Không tìm thấy sản phẩm nào.</p>
           </div>
         )}
       </div>
+
+      {/* 4. HIỂN THỊ NÚT XEM THÊM */}
+      {/* Chỉ hiển thị nút này nếu số lượng đang hiện nhỏ hơn tổng số sản phẩm */}
+      {visibleCount < filteredProducts.length && (
+        <div className="load-more-container">
+          <button className="load-more-btn" onClick={handleLoadMore}>
+            XEM THÊM
+          </button>
+        </div>
+      )}
       
     </div>
   );

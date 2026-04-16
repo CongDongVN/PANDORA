@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 const SidebarFilter = () => {
-  // --- GIỮ NGUYÊN LOGIC ---
   const [openSections, setOpenSections] = useState({
     type: true, material: true, size: true, price: true
   });
@@ -41,13 +40,14 @@ const SidebarFilter = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Icon Dấu Cọng (+) khi đóng, Dấu Trừ (-) khi mở
   const renderIcon = (isOpen) => {
     return isOpen ? (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="1.5">
         <line x1="5" y1="12" x2="19" y2="12"></line>
       </svg>
     ) : (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="1.5">
         <line x1="12" y1="5" x2="12" y2="19"></line>
         <line x1="5" y1="12" x2="19" y2="12"></line>
       </svg>
@@ -55,18 +55,38 @@ const SidebarFilter = () => {
   };
 
   return (
-    /* ĐÃ SỬA: class bọc ngoài khớp với file CSS khổng lồ */
-    <div className="sidebar-filter">
+    <div className="sidebar-filter-wrapper">
       
+      {/* 0. KHU VỰC SẮP XẾP (SORT) - Giống ảnh mẫu */}
+      <div className="sort-container" ref={sortRef} onClick={() => setIsSortOpen(!isSortOpen)}>
+        <span className="sort-label">Sắp xếp</span>
+        <div className="sort-value">
+          {sortValue}
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+        {/* Dropdown menu (ẩn/hiện) */}
+        {isSortOpen && (
+          <div className="sort-dropdown">
+            {sortOptions.map((opt, idx) => (
+              <div key={idx} className="sort-option-item" onClick={() => setSortValue(opt)}>
+                {opt}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* 1. LOẠI SẢN PHẨM */}
       <div className="filter-widget">
-        <div className="d-flex justify-content-between align-items-center cursor-pointer" onClick={() => toggleSection('type')}>
-          <h5 className="filter-widget-title mb-0">Loại sản phẩm</h5>
+        <div className="filter-widget-header" onClick={() => toggleSection('type')}>
+          <h5 className="filter-widget-title">Loại sản phẩm</h5>
           {renderIcon(openSections.type)}
         </div>
         
         {openSections.type && (
-          <div className="pt-3">
+          <div className="filter-widget-content">
             <div className="filter-checkbox-item">
               <input type="checkbox" id="type-vongtay" />
               <label htmlFor="type-vongtay">Vòng tay</label>
@@ -75,59 +95,44 @@ const SidebarFilter = () => {
         )}
       </div>
 
-      {/* 2. CHẤT LIỆU */}
+      {/* 2. CHẤT LIỆU (Có chấm màu) */}
       <div className="filter-widget">
-        <div className="d-flex justify-content-between align-items-center cursor-pointer" onClick={() => toggleSection('material')}>
-          <h5 className="filter-widget-title mb-0">Chất liệu</h5>
+        <div className="filter-widget-header" onClick={() => toggleSection('material')}>
+          <h5 className="filter-widget-title">Chất liệu</h5>
           {renderIcon(openSections.material)}
         </div>
         
         {openSections.material && (
-          <div className="pt-3">
+          <div className="filter-widget-content material-list">
             {[
-              { id: 'bac', label: 'Bạc' },
-              { id: 'vang14k', label: 'Mạ vàng 14k' },
-              { id: 'vanghong', label: 'Mạ vàng hồng 14k' },
-              { id: 'twotone', label: 'Twotone' }
+              { id: 'bac', label: 'Bạc', colorClass: 'bg-silver' },
+              { id: 'vang14k', label: 'Mạ vàng 14k', colorClass: 'bg-gold' },
+              { id: 'vanghong', label: 'Mạ vàng hồng 14k', colorClass: 'bg-rosegold' }
             ].map((m) => (
-              <div key={m.id} className="filter-checkbox-item" onClick={() => toggleMaterial(m.id)}>
-                <input 
-                    type="checkbox" 
-                    checked={selectedMaterials.includes(m.id)} 
-                    readOnly 
-                />
-                <label>{m.label}</label>
+              <div key={m.id} className="material-item" onClick={() => toggleMaterial(m.id)}>
+                <span className={`material-dot ${m.colorClass} ${selectedMaterials.includes(m.id) ? 'active' : ''}`}></span>
+                <label className={selectedMaterials.includes(m.id) ? 'fw-bold' : ''}>{m.label}</label>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* 3. SIZE */}
+      {/* 3. SIZE (Lưới 5 cột) */}
       <div className="filter-widget">
-        <div className="d-flex justify-content-between align-items-center cursor-pointer" onClick={() => toggleSection('size')}>
-          <h5 className="filter-widget-title mb-0">Size</h5>
+        <div className="filter-widget-header" onClick={() => toggleSection('size')}>
+          <h5 className="filter-widget-title">Size</h5>
           {renderIcon(openSections.size)}
         </div>
         
         {openSections.size && (
-          <div className="pt-3">
-             {/* Sử dụng class size-grid đã có trong CSS của bạn */}
-            <div className="size-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-              {['one size', '16', '17', '18', '19', '21', '23', '48', '50', '52', '54', '56', '45', '60'].map((size, index) => (
+          <div className="filter-widget-content">
+            <div className="size-grid">
+              {['one size', '16', '17', '18', '19', '21', '23', '45', '48', '50', '52', '54', '46', '58', '60'].map((size, index) => (
                 <div 
                   key={index}
                   className={`size-btn ${selectedSizes.includes(size) ? 'active' : ''}`}
                   onClick={() => toggleSize(size)}
-                  style={{ 
-                    border: '1px solid #ddd', 
-                    textAlign: 'center', 
-                    padding: '5px', 
-                    fontSize: '12px', 
-                    cursor: 'pointer',
-                    backgroundColor: selectedSizes.includes(size) ? '#111' : '#fff',
-                    color: selectedSizes.includes(size) ? '#fff' : '#111'
-                  }}
                 >
                   {size}
                 </div>
@@ -139,13 +144,13 @@ const SidebarFilter = () => {
 
       {/* 4. MỨC GIÁ */}
       <div className="filter-widget border-0">
-        <div className="d-flex justify-content-between align-items-center cursor-pointer" onClick={() => toggleSection('price')}>
-          <h5 className="filter-widget-title mb-0">Mức giá</h5>
+        <div className="filter-widget-header" onClick={() => toggleSection('price')}>
+          <h5 className="filter-widget-title">Mức giá</h5>
           {renderIcon(openSections.price)}
         </div>
         
         {openSections.price && (
-          <div className="pt-3">
+          <div className="filter-widget-content">
             {[
               'Dưới 1.000.000₫', '1.000.001₫ - 2.500.000₫', '2.500.001₫ - 5.000.000₫', '5.000.001₫ - 7.000.000₫', 'Trên 7.000.001₫'
             ].map((price, index) => (
@@ -157,6 +162,7 @@ const SidebarFilter = () => {
           </div>
         )}
       </div>
+
     </div>
   );
 };
