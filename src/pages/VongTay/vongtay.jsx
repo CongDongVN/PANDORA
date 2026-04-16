@@ -2,20 +2,22 @@ import React from "react";
 import CategoryList from "../Product/CategoryList";
 import SidebarFilter from "../Product/SidebarFilter";
 import ProductList from "../Product/ProductList";
+// Nhớ mở lại file CSS nếu bạn đã lỡ comment nó nhé
 import "../Product/product.css";
 
-const vongTayPage = () => { // Đổi tên Component tương ứng (VongTayPage, CharmPage...)
-  const categoryType = "vong-tay"; // Đổi 'nhan', 'charm', 'day-chuyen'...
+const VongTayPage = () => {
+  const categoryType = "vong-tay";
   const currentBanner = "/banners/banner-vong-tay.jpg";
 
   return (
     <div className="product-page-container">
+      
       {/* 1. KHU VỰC BANNER */}
       <section className="banner-section mb-4">
         <img src={currentBanner} alt={`Banner ${categoryType}`} className="img-fluid w-100 d-block" />
       </section>
 
-      <div className="container">
+      <div className="container ">
         {/* 2. KHU VỰC DANH MỤC TRÒN */}
         <section className="category-section">
           <CategoryList categoryType={categoryType} />
@@ -39,8 +41,9 @@ const vongTayPage = () => { // Đổi tên Component tương ứng (VongTayPage,
           </div>
         </section>
       </div>
+
     </div>
   );
 };
 
-export default vongTayPage;
+export default VongTayPage;
