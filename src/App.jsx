@@ -18,7 +18,7 @@ const ClientLayout = ({ children }) => {
     <>
       {/* <Header /> */} {/* Tạm thời bỏ comment khi bạn import Header */}
       <div style={{ minHeight: '60vh' }}>
-         {children} 
+        {children} 
       </div>
       {/* <Footer /> */} {/* Tạm thời bỏ comment khi bạn import Footer */}
     </>
