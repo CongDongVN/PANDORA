@@ -63,8 +63,7 @@ const Footer = () => {
               © Pandora Jewelry, LLC. All rights reserved.
             </span>
             <img 
-              src="https://cdn.pando.ra/static/images/logo-da-thong-bao-bo-cong-thuong.png" // Thay bằng link ảnh thật của bạn
-              alt="Đã thông báo bộ công thương"
+              src="/da-thong-bao-bo-cong-thuong.png" 
               className="bct-logo"
               style={{ height: '35px' }}
             />
