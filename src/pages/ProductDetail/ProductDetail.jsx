@@ -4,11 +4,12 @@ import { useParams, Link } from 'react-router-dom';
 // Import CSS
 import './ProductDetail.css';
 
-// Import dữ liệu
+// Import dữ liệu từ các nguồn khác nhau
 import { products } from '../../data/categoriesData';
 import { productDetails } from '../../data/productDetailsData';
+import { productsData, categories } from '../../data/homeData'; // Dữ liệu từ trang chủ
 
-// Import 4 Component con (Bạn đã xác nhận là chúng ổn)
+// Import 4 Component con
 import ProductGallery from './ProductGallery';
 import ProductInfo from './ProductInfo';
 import RelatedProducts from './RelatedProducts';
@@ -17,11 +18,15 @@ import ProductReviews from './ProductReviews';
 const ProductDetail = () => {
   const { id } = useParams();
   const productId = Number(id);
-  
-  // Tìm sản phẩm
-  const basicInfo = products.find((item) => item.id === productId);
-  
-  // Dữ liệu chi tiết, có thể là array hoặc object
+
+  // --- LOGIC TÌM KIẾM SẢN PHẨM TỪ MỌI NGUỒN ---
+  const allPossibleProducts = [
+    ...products,      
+    ...productsData,  
+    ...categories     
+  ];
+
+  const basicInfo = allPossibleProducts.find((item) => item.id === productId);
   const detailInfo = productDetails ? productDetails[productId] : null;
 
   // Cuộn lên đầu trang khi chuyển sản phẩm
@@ -29,6 +34,7 @@ const ProductDetail = () => {
     window.scrollTo(0, 0);
   }, [productId]);
 
+  // Nếu không tìm thấy sản phẩm
   if (!basicInfo) {
     return (
       <div className="container mt-5 pt-5 text-center" style={{ minHeight: '60vh' }}>
@@ -38,23 +44,24 @@ const ProductDetail = () => {
     );
   }
 
+  const displayTitle = basicInfo.detailName || basicInfo.name || basicInfo.title;
+
   return (
-    /* ĐÃ SỬA: Đảm bảo class tổng là product-detail-page */
     <div className="product-detail-page container">
       
-      {/* 1. Breadcrumb (Đồng bộ với CSS) */}
+      {/* 1. Breadcrumb */}
       <nav className="detail-breadcrumb mt-4 mb-4">
         <Link to="/" className="text-secondary text-decoration-none hover-dark fw-bold">Trang chủ</Link> / 
-        <Link to={`/${basicInfo.type}`} className="text-secondary text-decoration-none hover-dark fw-bold"> {basicInfo.type.replace('-', ' ')}</Link> / 
-        <span className="text-dark fw-bold">{basicInfo.name}</span>
+        <Link to={`/${basicInfo.type || ''}`} className="text-secondary text-decoration-none hover-dark fw-bold"> 
+           {basicInfo.type ? basicInfo.type.replace('-', ' ') : 'Sản phẩm'}
+        </Link> / 
+        <span className="text-dark fw-bold">{displayTitle}</span>
       </nav>
 
-      {/* 2. KHU VỰC NỘI DUNG CHÍNH (MAIN SECTION)
-          ĐÃ SỬA: Thay đổi 'row' thành 'product-main-layout' để chia cột
-      */}
+      {/* 2. KHU VỰC NỘI DUNG CHÍNH */}
       <div className="product-main-layout">
         
-        {/* ĐÃ SỬA: Thay đổi 'col-md-6' thành 'gallery-section-wrapper' */}
+        {/* Gallery Section */}
         <div className="gallery-section-wrapper">
           <ProductGallery 
             mainImage={basicInfo.image} 
@@ -62,18 +69,21 @@ const ProductDetail = () => {
           />
         </div>
         
-        {/* ĐÃ SỬA: Thay đổi 'col-md-6' thành 'info-section-wrapper' */}
+        {/* Info Section - Phần này sẽ được sửa giao diện bên trong file ProductInfo.jsx */}
         <div className="info-section-wrapper">
           <ProductInfo 
-            basicInfo={basicInfo} 
+            basicInfo={{...basicInfo, name: displayTitle}} 
             detailInfo={detailInfo} 
           />
         </div>
       </div>
 
-      {/* 3. Khu vực Sản phẩm liên quan */}
+      {/* 3. Khu vực Sản phẩm liên quan - Phần này sẽ thêm Hover trong file RelatedProducts.jsx */}
       <div className="related-section-wrapper mt-5">
-        <RelatedProducts currentCategory={basicInfo.type} currentProductId={basicInfo.id} />
+        <RelatedProducts 
+          currentCategory={basicInfo.type} 
+          currentProductId={basicInfo.id} 
+        />
       </div>
 
       {/* 4. Khu vực Đánh giá */}

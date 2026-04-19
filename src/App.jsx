@@ -1,15 +1,13 @@
-import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import React, { useEffect, useRef } from "react";
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 
 // IMPORT CSS & LIBS
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./App.css";
+
+// IMPORT DỮ LIỆU
+import { productsData, categories } from "./data/homeData.js";
 
 // IMPORT COMPONENTS
 import Header from "./components/Header/Header.jsx";
@@ -37,115 +35,114 @@ import AdminDashboard from "./pages/admin/dasdboard.jsx";
 import StoreLocator from "./pages/map/StoreLocator.jsx";
 import Checkout from "./pages/pay/Checkout";
 
-// DATA (Giữ nguyên của bạn)
-const productsData = [
-  {
-    id: 1,
-    tag: "A Symbol Of VietNam",
-    image: "./assets/img/charm1.png",
-    title: "Bộ Vòng Charm Pandora Trái Tim Việt Nam",
-    originalPrice: "6,570,000₫",
-    salePrice: "6,451,000₫",
-    discount: "-2%",
-  },
-  {
-    id: 2,
-    tag: "A Symbol Of VietNam",
-    image: "./assets/img/charm2.png",
-    title: "Charm Bạc Pandora Bản Đồ Việt Nam",
-    salePrice: "2,590,000₫",
-    hasEngraving: true,
-    colors: ["#silver", "#gold"],
-  },
-  {
-    id: 3,
-    tag: "A Symbol Of VietNam",
-    image: "./assets/img/charm3.png",
-    title: "Bộ dây chuyền & Charm vị nhà",
-    salePrice: "2,590,000₫",
-    hasEngraving: true,
-    colors: ["#silver", "#gold"],
-  },
-  {
-    id: 4,
-    tag: "A Symbol Of VietNam",
-    image: "./assets/img/charm4.png",
-    title: "Bộ dây chuyền & Charm vị nhà",
-    salePrice: "2,590,000₫",
-    hasEngraving: true,
-    colors: ["#silver", "#gold"],
-  },
-];
+// COMPONENT TRANG CHỦ (Để xử lý hiệu ứng trồi lên)
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
 
-const categories = [
-  { id: 1, name: "SẢN PHẨM MỚI", image: "./assets/img/Sanphammoi.png" },
-  { id: 2, name: "CHARMS", image: "./assets/img/Charms.png" },
-  { id: 3, name: "VÒNG TAY", image: "./assets/img/Vongtay.png" },
-  { id: 4, name: "NHẪN", image: "./assets/img/Nhan.png" },
-  { id: 5, name: "HOA TAI", image: "./assets/img/Hoatai.png" },
-  { id: 6, name: "DÂY CHUYỀN", image: "./assets/img/Daychuyen.png" },
-];
+  useEffect(() => {
+    // Mỗi khi pathname (đường dẫn) thay đổi, cuộn về đầu trang ngay lập tức
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
+
+const HomeContent = () => {
+  const categoryRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // Chỉ lấy các item trong categoryRef để không ảnh hưởng đến sản phẩm nổi bật
+          if (categoryRef.current) {
+            const items = categoryRef.current.querySelectorAll(".category-fade-item");
+            if (entry.isIntersecting) {
+              items.forEach((item, index) => {
+                item.style.transitionDelay = `${index * 0.2}s`;
+                item.classList.add("visible");
+              });
+            } else {
+              items.forEach((item, index) => {
+                const reverseIndex = items.length - 1 - index;
+                item.style.transitionDelay = `${reverseIndex * 0.1}s`;
+                item.classList.remove("visible");
+              });
+            }
+          }
+        });
+      },
+      {
+        rootMargin: "-10% 0px -10% 0px",
+        threshold: 0.1,
+      }
+    );
+
+    if (categoryRef.current) observer.observe(categoryRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <main className="container-fluid px-custom">
+      <section className="mt-4">
+        <BannerSlider />
+      </section>
+
+      {/* PHẦN 1: 4 SẢN PHẨM NỔI BẬT */}
+      <section className="mt-5 container">
+        <h2 className="text-center mb-5 fw-bold" style={{ letterSpacing: '2px' }}>SẢN PHẨM NỔI BẬT</h2>
+        <div className="row g-4 justify-content-center">
+          {productsData &&
+            productsData.slice(0, 4).map((item) => ( // Lấy đúng 4 cái đầu tiên
+              <div className="col-12 col-md-6 col-lg-3" key={item.id}>
+                {/* ProductCard bây giờ đã có logic hover và xem nhanh */}
+                <ProductCard product={item} />
+              </div>
+            ))}
+        </div>
+      </section>
+
+      {/* PHẦN 2: 6 DANH MỤC TRÒN */}
+      <div className="container-fluid px-custom mt-5 mb-5" ref={categoryRef}>
+        <div className="row g-4 justify-content-center">
+          {categories.map((cat) => (
+            <div
+              key={cat.id}
+              className="col-6 col-sm-4 col-md-2 text-center category-fade-item"
+            >
+              <Link to={cat.path} className="text-decoration-none text-dark category-hover">
+                <div className="category-circle-wrapper">
+                  <img src={cat.image} alt={cat.name} className="img-fluid w-100 h-100 object-fit-cover" />
+                </div>
+                <h6 className="category-name">{cat.name}</h6>
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <VideoSection />
+      <FeatureGrid />
+      <ExplorePandora />
+    </main>
+  );
+};
 
 function App() {
   return (
     <Router>
       <div className="App">
+        <ScrollToTop />
         <Routes>
-          {/* 1. KHU VỰC ADMIN: Không có Header/Footer */}
           <Route path="/dasdboard" element={<AdminDashboard />} />
 
-          {/* 2. KHU VỰC KHÁCH HÀNG: Có đầy đủ Header & Footer */}
           <Route
             path="/*"
             element={
               <>
                 <Header />
                 <Routes>
-                  {/* TRANG CHỦ (Tất cả component trang trí) */}
-                  <Route
-                    path="/"
-                    element={
-                      <main className="container-fluid px-custom">
-                        <section className="mt-4">
-                          <BannerSlider />
-                        </section>
-                        <section className="mt-5 container">
-                          <div className="row g-4">
-                            {productsData.map((item) => (
-                              <div
-                                className="col-12 col-md-6 col-lg-3"
-                                key={item.id}
-                              >
-                                <ProductCard product={item} />
-                              </div>
-                            ))}
-                          </div>
-                        </section>
-                        <div className="container-fluid px-custom mt-5 mb-5">
-                          <div className="row g-4 justify-content-center">
-                            {categories.map((cat) => (
-                              <div
-                                key={cat.id}
-                                className="col-6 col-sm-4 col-md-2 text-center"
-                              >
-                                <img
-                                  src={cat.image}
-                                  alt={cat.name}
-                                  className="img-fluid mb-2"
-                                />
-                                <h6 className="small fw-bold">{cat.name}</h6>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                        <VideoSection />
-                        <FeatureGrid />
-                        <ExplorePandora />
-                      </main>
-                    }
-                  />
-
-                  {/* CÁC TRANG CỬA HÀNG */}
+                  <Route path="/" element={<HomeContent />} />
                   <Route path="/collection" element={<Collection />} />
                   <Route path="/jewelry" element={<Jewelry />} />
                   <Route
@@ -157,8 +154,6 @@ function App() {
                   <Route path="/charm" element={<CharmPage />} />
                   <Route path="/nhan" element={<NhanPage />} />
                   <Route path="/product/:id" element={<ProductDetail />} />
-
-                  {/* CÁC TRANG TÀI KHOẢN/HỆ THỐNG */}
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
                   <Route path="/useracc" element={<UserAccount />} />

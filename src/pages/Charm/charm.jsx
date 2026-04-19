@@ -22,7 +22,7 @@ const CharmPage = () => { // Đổi tên Component tương ứng (VongTayPage, C
         </section>
 
         {/* 3. KHU VỰC CHÍNH (Sử dụng chuẩn Bootstrap Grid cho Reponsive) */}
-        <section className="main-content-section mt-5">
+        <section className="product-main-layout mt-5">
           <div className="row">
             
             {/* CỘT TRÁI: SIDEBAR (Chiếm 3/12) */}

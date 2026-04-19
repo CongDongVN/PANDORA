@@ -98,13 +98,37 @@
   mix-blend-mode: multiply;
 }
 
-/* Fix nút Xem Nhanh */
-.quick-view-box {
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
+.slider-item-container:hover .slider-img-wrapper img {
+    transform: scale(1.08);
+    transition: transform 0.5s ease;
 }
-.slider-item:hover .quick-view-box {
-  transform: translateY(0);
+
+.related-quick-view-btn {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    background-color: #111;
+    color: #fff;
+    border: none;
+    padding: 10px 0;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    z-index: 10;
+    
+    /* Trạng thái ẩn */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+.slider-item-container:hover .related-quick-view-btn {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
 /* --- KHU VỰC 5: PRODUCT REVIEWS (ĐÁNH GIÁ 3 CỘT) --- */
