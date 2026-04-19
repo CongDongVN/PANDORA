@@ -1,154 +1,198 @@
-import React, { useState } from 'react';
-import { BsSearch, BsPlusLg, BsPencilSquare, BsFolder, BsX, BsTrash } from 'react-icons/bs';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { 
+    BsPlusLg, BsPencilSquare, BsFolder, BsX, BsTrash, BsLink45Deg 
+} from 'react-icons/bs';
+
+const API_BASE_URL = "https://localhost:7221/api/Categories"; // Kiểm tra lại Port của bạn
 
 const CategoryManager = () => {
-    // 1. STATE: DỮ LIỆU DANH MỤC
-    const [categories, setCategories] = useState([
-        { id: 'CAT-01', name: 'Nhẫn', count: 124, status: 'Hoạt động' },
-        { id: 'CAT-02', name: 'Dây chuyền', count: 85, status: 'Hoạt động' },
-        { id: 'CAT-03', name: 'Bông tai', count: 210, status: 'Hoạt động' },
-        { id: 'CAT-04', name: 'Vòng tay', count: 64, status: 'Ẩn' },
-        { id: 'CAT-05', name: 'Charm', count: 342, status: 'Hoạt động' },
-    ]);
+    // ---------------------------------------------------------
+    // 1. STATE
+    // ---------------------------------------------------------
+    const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [showAddModal, setShowAddModal] = useState(false);
+    
+    // Cấu trúc dữ liệu chuẩn cho Add/Edit
+    const initialFormState = { name: '', slug: '', description: '', parentId: null };
+    const [formData, setFormData] = useState(initialFormState);
+    const [editingId, setEditingId] = useState(null); // null = Add, !null = Edit
 
-    const [editingCategory, setEditingCategory] = useState(null); 
-
-    // --- HÀM LẤY MÀU SẮC TRẠNG THÁI ---
-    const getStatusStyle = (status) => {
-        if (status === 'Hoạt động') return { bg: '#16c09833', color: '#008767', border: '1px solid #008767' };
-        if (status === 'Ẩn') return { bg: '#ffc5c5', color: '#df0404', border: '1px solid #df0404' }; 
-        return { bg: '#f5f5f5', color: '#777', border: '1px solid #ccc' }; 
+    // ---------------------------------------------------------
+    // 2. FUNCTIONS (API & LOGIC)
+    // ---------------------------------------------------------
+    const fetchCategories = async () => {
+        try {
+            const res = await axios.get(API_BASE_URL);
+            setCategories(res.data);
+            setLoading(false);
+        } catch (err) {
+            console.error("Lỗi tải dữ liệu", err);
+            setLoading(false);
+        }
     };
 
-    // =========================================================
-    // HÀM MỚI: CHUYỂN ĐỔI TRẠNG THÁI KHI CLICK
-    // =========================================================
-    const handleToggleStatus = (id) => {
-        setCategories(categories.map(c => 
-            c.id === id ? { ...c, status: c.status === 'Hoạt động' ? 'Ẩn' : 'Hoạt động' } : c
-        ));
+    useEffect(() => { fetchCategories(); }, []);
+
+    // Hàm chuyển đổi Tên -> Slug tự động
+    const createSlug = (str) => {
+        return str.toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Bỏ dấu tiếng Việt
+            .replace(/[^\w ]+/g, '')
+            .replace(/ +/g, '-');
     };
 
-    // --- CÁC HÀM XỬ LÝ SỬA ---
-    const handleEditCatClick = (category) => setEditingCategory(category);
-    const handleCatInputChange = (e) => setEditingCategory({ ...editingCategory, [e.target.name]: e.target.value });
-    const handleSaveCategory = () => {
-        setCategories(categories.map(c => c.id === editingCategory.id ? editingCategory : c));
-        setEditingCategory(null);
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        let newValue = value;
+
+        if (name === 'parentId') newValue = value === "" ? null : parseInt(value);
+        
+        setFormData(prev => {
+            const updated = { ...prev, [name]: newValue };
+            // Tự động tạo slug khi gõ name
+            if (name === 'name') {
+                updated.slug = createSlug(value);
+            }
+            return updated;
+        });
     };
+
+    const handleSave = async () => {
+        try {
+            if (editingId) {
+                // UPDATE (PUT)
+                await axios.put(`${API_BASE_URL}/${editingId}`, formData);
+            } else {
+                // CREATE (POST)
+                await axios.post(API_BASE_URL, formData);
+            }
+            closeModal();
+            fetchCategories();
+        } catch (err) {
+            alert(err.response?.data || "Đã có lỗi xảy ra");
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm("Xác nhận xóa danh mục này?")) {
+            try {
+                await axios.delete(`${API_BASE_URL}/${id}`);
+                fetchCategories();
+            } catch (err) {
+                alert("Không thể xóa!");
+            }
+        }
+    };
+
+    const openEditModal = (cat) => {
+        setEditingId(cat.id);
+        setFormData({
+            name: cat.name,
+            slug: cat.slug,
+            description: cat.description || '',
+            parentId: cat.parentId
+        });
+        setShowAddModal(true);
+    };
+
+    const closeModal = () => {
+        setShowAddModal(false);
+        setEditingId(null);
+        setFormData(initialFormState);
+    };
+
+    // ---------------------------------------------------------
+    // 3. RENDER
+    // ---------------------------------------------------------
+    if (loading) return <div className="p-5 text-center">Đang kết nối API...</div>;
 
     return (
-        <div className="card border-0 shadow-sm rounded-4 p-4 position-relative">
-            {/* Header & Thanh công cụ */}
+        <div className="card border-0 shadow-sm rounded-4 p-4">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h4 className="fw-bold mb-1 d-flex align-items-center">
-                        <BsFolder className="me-2 text-primary" style={{ color: '#5932ea' }}/> Quản lý Danh mục
-                    </h4>
-                    <p className="text-muted mb-0" style={{ fontSize: '0.9rem' }}>Thêm, sửa, xóa và phân loại</p>
-                </div>
-                <div className="d-flex gap-3">
-                    <div className="input-group bg-light rounded-3" style={{ width: '250px', border: 'none' }}>
-                        <span className="input-group-text bg-transparent border-0 pe-1"><BsSearch className="text-muted" /></span>
-                        <input type="text" className="form-control border-0 bg-transparent shadow-none" placeholder="Tìm danh mục..." />
-                    </div>
-                    <button className="btn text-white fw-bold d-flex align-items-center px-4 shadow-none" style={{ backgroundColor: '#5932ea', borderRadius: '8px' }}>
-                        <BsPlusLg className="me-2 fw-bold" /> Thêm danh mục
-                    </button>
-                </div>
+                <h4 className="fw-bold m-0"><BsFolder className="me-2"/> Quản lý Danh mục</h4>
+                <button className="btn text-white px-4" style={{backgroundColor: '#5932ea'}} 
+                        onClick={() => setShowAddModal(true)}>
+                    <BsPlusLg className="me-2"/> Thêm mới
+                </button>
             </div>
 
-            {/* Bảng Danh mục */}
-            <div className="table-responsive">
-                <table className="table table-hover align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th className="text-muted fw-normal border-bottom-0 pb-3">Mã DM</th>
-                            <th className="text-muted fw-normal border-bottom-0 pb-3">Tên danh mục</th>
-                            <th className="text-muted fw-normal border-bottom-0 pb-3 text-center">Số sản phẩm</th>
-                            <th className="text-muted fw-normal border-bottom-0 pb-3 text-center">Trạng thái</th>
-                            <th className="text-muted fw-normal border-bottom-0 pb-3 text-end">Hành động</th>
+            <table className="table align-middle">
+                <thead className="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên & Slug</th>
+                        <th>Mô tả</th>
+                        <th>Danh mục cha</th>
+                        <th className="text-end">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {categories.map(cat => (
+                        <tr key={cat.id}>
+                            <td>{cat.id}</td>
+                            <td>
+                                <div className="fw-bold">{cat.name}</div>
+                                <small className="text-muted"><BsLink45Deg/>{cat.slug}</small>
+                            </td>
+                            <td className="text-muted">{cat.description || "---"}</td>
+                            <td>{categories.find(c => c.id === cat.parentId)?.name || "Gốc"}</td>
+                            <td className="text-end">
+                                <button className="btn btn-sm btn-outline-primary me-2" onClick={() => openEditModal(cat)}>
+                                    <BsPencilSquare/>
+                                </button>
+                                <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(cat.id)}>
+                                    <BsTrash/>
+                                </button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {categories.map((category, index) => {
-                            const statusStyle = getStatusStyle(category.status);
-                            return (
-                                <tr key={index}>
-                                    <td className="py-3 fw-bold text-secondary">{category.id}</td>
-                                    <td className="py-3 fw-bold fs-6 text-dark">{category.name}</td>
-                                    <td className="py-3 text-center">
-                                        <span className="badge bg-light text-dark border px-3 py-2 rounded-pill fs-6">{category.count}</span>
-                                    </td>
-                                    <td className="py-3 text-center">
-                                        {/* NÚT CLICK ĐỂ ĐỔI TRẠNG THÁI */}
-                                        <span 
-                                            className="px-3 py-1 rounded-1 fw-bold" 
-                                            onClick={() => handleToggleStatus(category.id)}
-                                            title="Click để chuyển trạng thái"
-                                            style={{ 
-                                                backgroundColor: statusStyle.bg, 
-                                                color: statusStyle.color, 
-                                                border: statusStyle.border, 
-                                                fontSize: '0.85rem',
-                                                cursor: 'pointer',
-                                                userSelect: 'none'
-                                            }}
-                                        >
-                                            {category.status}
-                                        </span>
-                                    </td>
-                                    <td className="py-3 text-end">
-                                        <button 
-                                            className="btn btn-sm btn-light border me-2 shadow-none" 
-                                            title="Sửa danh mục"
-                                            onClick={() => handleEditCatClick(category)}
-                                        >
-                                            <BsPencilSquare className="text-success" />
-                                        </button>
-                                        <button className="btn btn-sm btn-light border shadow-none" title="Xóa danh mục">
-                                            <BsTrash className="text-danger" />
-                                        </button>
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
+                    ))}
+                </tbody>
+            </table>
 
-            {/* ===================================================================== */}
-            {/* MODAL SỬA DANH MỤC */}
-            {/* ===================================================================== */}
-            {editingCategory && (
-                <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
-                    <div className="bg-white rounded-4 shadow-lg p-4" style={{ width: '400px', maxWidth: '90%' }}>
-                        
-                        <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-                            <h5 className="fw-bold mb-0">Sửa danh mục</h5>
-                            <button className="btn btn-sm btn-light rounded-circle" onClick={() => setEditingCategory(null)}>
-                                <BsX className="fs-4" />
-                            </button>
+            {/* MODAL CHUNG CHO THÊM VÀ SỬA */}
+            {showAddModal && (
+                <div className="modal d-block" style={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content border-0 rounded-4 p-3">
+                            <div className="modal-header border-0">
+                                <h5 className="fw-bold">{editingId ? "Cập nhật danh mục" : "Thêm danh mục mới"}</h5>
+                                <button className="btn-close shadow-none" onClick={closeModal}></button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="mb-3">
+                                    <label className="form-label small fw-bold">Tên danh mục</label>
+                                    <input type="text" className="form-control" name="name" 
+                                           value={formData.name} onChange={handleInputChange} />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label small fw-bold">Slug (Tự động)</label>
+                                    <input type="text" className="form-control bg-light" name="slug" 
+                                           value={formData.slug} onChange={handleInputChange} />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label small fw-bold">Mô tả</label>
+                                    <textarea className="form-control" name="description" rows="2"
+                                              value={formData.description} onChange={handleInputChange}></textarea>
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label small fw-bold">Thuộc danh mục cha</label>
+                                    <select className="form-select" name="parentId" 
+                                            value={formData.parentId || ""} onChange={handleInputChange}>
+                                        <option value="">-- Là danh mục gốc --</option>
+                                        {categories.filter(c => c.id !== editingId).map(c => (
+                                            <option key={c.id} value={c.id}>{c.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="modal-footer border-0">
+                                <button className="btn btn-light px-4" onClick={closeModal}>Hủy</button>
+                                <button className="btn text-white px-4" style={{backgroundColor: '#5932ea'}} 
+                                        onClick={handleSave}>Lưu dữ liệu</button>
+                            </div>
                         </div>
-
-                        <div className="mb-4">
-                            <label className="form-label fw-bold text-muted" style={{ fontSize: '0.9rem' }}>Tên danh mục</label>
-                            <input 
-                                type="text" 
-                                className="form-control shadow-none" 
-                                name="name" 
-                                value={editingCategory.name} 
-                                onChange={handleCatInputChange} 
-                            />
-                        </div>
-                        
-                        <div className="d-flex justify-content-end gap-2 pt-3 border-top">
-                            <button className="btn btn-light fw-bold px-4" onClick={() => setEditingCategory(null)}>Hủy</button>
-                            <button className="btn text-white fw-bold px-4 shadow-none" style={{ backgroundColor: '#5932ea' }} onClick={handleSaveCategory}>
-                                Lưu thay đổi
-                            </button>
-                        </div>
-
                     </div>
                 </div>
             )}
