@@ -1,8 +1,11 @@
 import React, { useRef } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. IMPORT THÊM ĐIỀU HƯỚNG Ở ĐÂY
 import { cartItems, favoriteItems } from '../../data/cartData';
 import './Cart.css';
 
 const Cart = () => {
+    const navigate = useNavigate(); // 2. KHỞI TẠO HÀM CHUYỂN TRANG
+
     // tham chiếu đến khung chứa sản phẩm để cuộn
     const sliderRef = useRef(null);
 
@@ -16,6 +19,7 @@ const Cart = () => {
             });
         }
     };
+    
     return (
         <div id="cart-page-unique" className="container-fluid mt-5 cart-page">
             <div className="cart-wrapper">
@@ -191,7 +195,11 @@ const Cart = () => {
                                 </p>
                             </div>
 
-                            <button className="btn btn-dark w-100 accordion rounded-0 py-2 fw-bold text-uppercase mb-3">
+                            {/* 3. ĐÃ GẮN LỆNH ONCLICK VÀO NÚT THANH TOÁN */}
+                            <button 
+                                className="btn btn-dark w-100 accordion rounded-0 py-2 fw-bold text-uppercase mb-3"
+                                onClick={() => navigate('/Checkout')} 
+                            >
                                 Thanh toán
                             </button>
 

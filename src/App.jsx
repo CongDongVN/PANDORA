@@ -33,9 +33,10 @@ import LoginPage from "./pages/Login/Login.jsx";
 import RegisterPage from "./pages/Register/Register.jsx";
 import Cart from "./pages/shoppingcart/cart.jsx";
 import UserAccount from "./pages/detailuser/useracc.jsx";
-import AdminDashboard from "./pages/admin/dasdboard.jsx";
+import AdminDashboard from "./pages/admin/dashboard.jsx";
 import StoreLocator from "./pages/map/StoreLocator.jsx";
 import Checkout from "./pages/pay/Checkout";
+import OrderTracking from "./pages/tiendogiaohang/OrderTracking.jsx";
 
 // DATA (Giữ nguyên của bạn)
 const productsData = [
@@ -92,7 +93,14 @@ function App() {
       <div className="App">
         <Routes>
           {/* 1. KHU VỰC ADMIN: Không có Header/Footer */}
-          <Route path="/dasdboard" element={<AdminDashboard />} />
+          {/* Tự động chuyển hướng /admin về trang tổng quan */}
+          <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+
+          {/* Đường dẫn động nhận diện từng tab (dashboard, categories, orders...) */}
+          <Route path="/admin/:tab" element={<AdminDashboard />} />
+
+          {/* Đường dẫn 3 khúc: Nhận diện chi tiết mục bên trong (VD: /admin/categories/CAT-01) */}
+          <Route path="/admin/:tab/:itemId" element={<AdminDashboard />} />
 
           {/* 2. KHU VỰC KHÁCH HÀNG: Có đầy đủ Header & Footer */}
           <Route
@@ -165,6 +173,7 @@ function App() {
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/StoreLocator" element={<StoreLocator />} />
                   <Route path="/Checkout" element={<Checkout />} />
+                  <Route path="/OrderTracking" element={<OrderTracking />} />
                 </Routes>
                 <Footer />
               </>
