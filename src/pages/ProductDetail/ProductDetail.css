@@ -35,13 +35,16 @@
 }
 
 .gallery-img-wrapper img {
-  /* MẸO NHỎ: Hiện tại ảnh đang bị ép nhỏ lại 85%. 
-       Nếu bạn muốn ảnh to tràn hẳn ra mép khung sau khi đã bỏ padding, 
-       hãy đổi số 85% dưới đây thành 100% nhé! */
-  max-width: 85% !important;
-  max-height: 85% !important;
-  object-fit: contain;
-  mix-blend-mode: multiply;
+    /* Đổi từ 85% lên 100% để ảnh chạm mép khung */
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    
+    /* object-fit: cover sẽ giúp ảnh lấp đầy khung vuông vắn */
+    /* Nếu bạn muốn giữ nguyên tỉ lệ ảnh mà không mất chi tiết, dùng 'contain' */
+    object-fit: cover; 
+    mix-blend-mode: multiply;
 }
 
 /* --- KHU VỰC 3: PRODUCT INFO & ACCORDION --- */
@@ -72,9 +75,8 @@
 /* --- KHU VỰC 4: RELATED PRODUCTS (SẢN PHẨM CÙNG LOẠI) --- */
 .slider-container {
   display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important; /* Ép 4 cột ngang */
+  grid-template-columns: repeat(4, 1fr) !important;
   gap: 20px;
-  margin-top: 20px;
 }
 
 .slider-img-wrapper {
@@ -91,11 +93,15 @@
 }
 
 .slider-img-wrapper img {
-  /* Tương tự, nếu muốn ảnh to hết cỡ thì đổi 80% thành 100% */
-  max-width: 80% !important;
-  max-height: 80% !important;
-  object-fit: contain;
-  mix-blend-mode: multiply;
+    /* Đổi từ 80% lên 100% để ảnh to hết cỡ */
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    
+    object-fit: contain;
+    mix-blend-mode: multiply;
+    transition: transform 0.5s ease;
 }
 
 .slider-item-container:hover .slider-img-wrapper img {
@@ -103,6 +109,7 @@
     transition: transform 0.5s ease;
 }
 
+/* Style cho nút Xem Nhanh ở Related Products */
 .related-quick-view-btn {
     position: absolute;
     bottom: 12px;
@@ -115,16 +122,18 @@
     font-size: 11px;
     font-weight: 800;
     text-transform: uppercase;
+    text-align: center;
     cursor: pointer;
     z-index: 10;
     
-    /* Trạng thái ẩn */
+    /* Trạng thái ẩn ban đầu */
     opacity: 0;
     visibility: hidden;
     transform: translateY(10px);
     transition: all 0.3s ease;
 }
 
+/* Khi hover vào container thì nút hiện lên */
 .slider-item-container:hover .related-quick-view-btn {
     opacity: 1;
     visibility: visible;
@@ -193,9 +202,9 @@
   cursor: pointer;
 }
 .star-box.active {
-  background-color: #111;
+  background-color: #f48fb1;
   color: #fff;
-  border-color: #111;
+  border-color: #f48fb1;
 }
 
 /* --- RESPONSIVE --- */
