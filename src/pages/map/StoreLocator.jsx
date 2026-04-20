@@ -81,7 +81,7 @@ const StoreLocator = () => {
     };
 
     return (
-        <div className="container py-5">
+        <div className="container pt-5 pb-5 mb-5">
             <div className="row g-4 locator-row">
 
                 <div className="col-12 col-lg-4 d-flex flex-column h-100">
