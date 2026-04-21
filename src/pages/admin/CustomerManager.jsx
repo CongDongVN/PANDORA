@@ -1,361 +1,260 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Đảm bảo đã cài đặt: npm install axios
 import { 
     BsSearch, BsPeople, BsPencilSquare, BsEnvelope, BsX, BsEye, 
-    BsArrowLeft, BsTelephone, BsCalendarDate, BsCartCheck, BsAward, BsClockHistory
+    BsArrowLeft, BsTelephone, BsCalendarDate, BsCartCheck, BsAward, BsClockHistory, BsTrash
 } from 'react-icons/bs';
 
 const CustomerManager = () => {
-    // 1. KÍCH HOẠT ĐỌC URL
-    const { itemId } = useParams(); // Lấy mã CUS-xxx từ thanh địa chỉ
+    const { itemId } = useParams();
     const navigate = useNavigate();
 
-    // 2. STATE: Dữ liệu khách hàng
-    const [customers, setCustomers] = useState([
-        { id: 'CUS-001', name: 'Jane Cooper', phone: '(225) 555-0118', email: 'jane@microsoft.com', membership: 'Silver', status: 'Hoạt động', dob: '12/05/1995', totalItems: 24, totalSpent: '$1,250.00', password: 'hashedpassword1' },
-        { id: 'CUS-002', name: 'Floyd Miles', phone: '(205) 555-0100', email: 'floyd@yahoo.com', membership: 'Bronze', status: 'Bị khóa', dob: '08/11/1998', totalItems: 3, totalSpent: '$150.00', password: 'hashedpassword2' },
-        { id: 'CUS-003', name: 'Ronald Richards', phone: '(302) 555-0107', email: 'ronald@adobe.com', membership: 'Gold', status: 'Hoạt động', dob: '23/02/1990', totalItems: 56, totalSpent: '$3,890.50', password: 'hashedpassword3' },
-        { id: 'CUS-004', name: 'Marvin McKinney', phone: '(252) 555-0126', email: 'marvin@tesla.com', membership: 'VIP', status: 'Hoạt động', dob: '15/09/1985', totalItems: 120, totalSpent: '$9,500.00', password: 'hashedpassword4' },
-        { id: 'CUS-005', name: 'Jerome Bell', phone: '(629) 555-0129', email: 'jerome@google.com', membership: 'Bronze', status: 'Hoạt động', dob: '30/01/2000', totalItems: 1, totalSpent: '$65.00', password: 'hashedpassword5' },
-        { id: 'CUS-006', name: 'Kathryn Murphy', phone: '(406) 555-0120', email: 'kathryn@microsoft.com', membership: 'Silver', status: 'Hoạt động', dob: '19/07/1993', totalItems: 15, totalSpent: '$890.00', password: 'hashedpassword6' },
-    ]);
+    // 1. STATE
+    const [customers, setCustomers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [editingCustomer, setEditingCustomer] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
-    // Dữ liệu ảo cho Lịch sử mua hàng (Dùng chung cho tất cả khách để minh họa)
-    const dummyPurchaseHistory = [
-        { orderId: '#ORD-0921', date: '20/10/2023', items: 'Nhẫn Bạc Pandora, Charm Trái Tim...', total: '$180.00', status: 'Hoàn thành' },
-        { orderId: '#ORD-0855', date: '15/09/2023', items: 'Vòng tay Basic', total: '$75.00', status: 'Hoàn thành' },
-        { orderId: '#ORD-0712', date: '02/08/2023', items: 'Bông tai Nụ Đá Xanh', total: '$45.00', status: 'Hoàn thành' },
-    ];
+    const API_URL = 'https://localhost:7221/api/Auth'; // Thay bằng URL API của bạn
 
-    const [editingCustomer, setEditingCustomer] = useState(null); 
-
-    // --- CÁC HÀM XỬ LÝ GIAO DIỆN ---
-    const getStatusStyle = (status) => {
-        if (status === 'Hoạt động') return { bg: '#16c09833', color: '#008767', border: '1px solid #008767' };
-        return { bg: '#ffc5c5', color: '#df0404', border: '1px solid #df0404' }; // Bị khóa
-    };
-
-    const getMembershipStyle = (tier) => {
-        switch(tier) {
-            case 'VIP': return { color: '#d32f2f', bg: '#ffebee', border: '1px solid #d32f2f' }; 
-            case 'Gold': return { color: '#d39e00', bg: '#fffde7', border: '1px solid #d39e00' }; 
-            case 'Silver': return { color: '#455a64', bg: '#cfd8dc', border: '1px solid #455a64' }; 
-            default: return { color: '#8d6e63', bg: '#efebe9', border: '1px solid #8d6e63' }; // Bronze
+    // 2. FETCH DATA TỪ API
+    const fetchCustomers = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(API_URL);
+            setCustomers(response.data);
+        } catch (error) {
+            console.error("Lỗi khi lấy danh sách khách hàng:", error);
+            alert("Không thể kết nối với máy chủ!");
+        } finally {
+            setLoading(false);
         }
     };
 
-    const getInitials = (name) => {
-        const names = name.split(' ');
-        return names.map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    useEffect(() => {
+        fetchCustomers();
+    }, []);
+
+    // 3. XỬ LÝ XÓA KHÁCH HÀNG
+    const handleDelete = async (id) => {
+        if (window.confirm("Bạn có chắc chắn muốn xóa khách hàng này?")) {
+            try {
+                await axios.delete(`${API_URL}/${id}`);
+                setCustomers(customers.filter(c => c.id !== id));
+                if (itemId) navigate('/admin/users'); // Nếu đang xem chi tiết thì thoát ra
+            } catch (error) {
+                alert("Xóa thất bại!");
+            }
+        }
     };
 
-    const calculateAge = (dobString) => {
-        if (!dobString) return '';
-        const [day, month, year] = dobString.split('/');
-        const birthDate = new Date(year, month - 1, day);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-        return age;
+    // 4. CẬP NHẬT TRẠNG THÁI / HẠNG (API PUT)
+    const handleQuickUpdate = async (id, updatedFields) => {
+        try {
+            const customer = customers.find(c => c.id === id);
+            const updatedData = { ...customer, ...updatedFields };
+            await axios.put(`${API_URL}/${id}`, updatedData);
+            setCustomers(customers.map(c => c.id === id ? updatedData : c));
+        } catch (error) {
+            alert("Cập nhật thất bại!");
+        }
     };
 
-    // =========================================================
-    // HÀM MỚI: CHUYỂN ĐỔI TRẠNG THÁI VÀ HẠNG KHI CLICK
-    // =========================================================
     const handleToggleStatus = (id) => {
-        setCustomers(customers.map(c => c.id === id ? { ...c, status: c.status === 'Hoạt động' ? 'Bị khóa' : 'Hoạt động' } : c));
+        const customer = customers.find(c => c.id === id);
+        handleQuickUpdate(id, { status: customer.status === 'Hoạt động' ? 'Bị khóa' : 'Hoạt động' });
     };
 
     const handleToggleMembership = (id) => {
-        setCustomers(customers.map(c => {
-            if (c.id === id) {
-                const tiers = ['Bronze', 'Silver', 'Gold', 'VIP'];
-                const nextTier = tiers[(tiers.indexOf(c.membership) + 1) % tiers.length];
-                return { ...c, membership: nextTier };
-            }
-            return c;
-        }));
+        const customer = customers.find(c => c.id === id);
+        const tiers = ['Bronze', 'Silver', 'Gold', 'VIP'];
+        const nextTier = tiers[(tiers.indexOf(customer.membership) + 1) % tiers.length];
+        handleQuickUpdate(id, { membership: nextTier });
     };
 
-    // ĐIỀU HƯỚNG BẰNG URL
-    const handleViewDetails = (customer) => navigate(`/admin/users/${customer.id}`);
-    const handleBackToCustomers = () => navigate('/admin/users');
-
-    const handleEditClick = (customer) => setEditingCustomer(customer);
-    const handleInputChange = (e) => setEditingCustomer({ ...editingCustomer, [e.target.name]: e.target.value });
-    const handleSaveChanges = () => {
-        setCustomers(customers.map(c => c.id === editingCustomer.id ? editingCustomer : c));
-        setEditingCustomer(null); 
+    // 5. LƯU THAY ĐỔI FORM (API PUT)
+    const handleSaveChanges = async () => {
+        try {
+            await axios.put(`${API_URL}/${editingCustomer.id}`, editingCustomer);
+            setCustomers(customers.map(c => c.id === editingCustomer.id ? editingCustomer : c));
+            setEditingCustomer(null);
+        } catch (error) {
+            alert("Không thể lưu thay đổi!");
+        }
     };
 
-    // TÌM KHÁCH HÀNG ĐANG ĐƯỢC CHỌN QUA URL
+    // --- HELPER FUNCTIONS ---
+    const getStatusStyle = (status) => status === 'Hoạt động' 
+        ? { bg: '#16c09833', color: '#008767', border: '1px solid #008767' }
+        : { bg: '#ffc5c5', color: '#df0404', border: '1px solid #df0404' };
+
+    const getMembershipStyle = (tier) => {
+        const styles = {
+            VIP: { color: '#d32f2f', bg: '#ffebee', border: '1px solid #d32f2f' },
+            Gold: { color: '#d39e00', bg: '#fffde7', border: '1px solid #d39e00' },
+            Silver: { color: '#455a64', bg: '#cfd8dc', border: '1px solid #455a64' },
+            Bronze: { color: '#8d6e63', bg: '#efebe9', border: '1px solid #8d6e63' }
+        };
+        return styles[tier] || styles.Bronze;
+    };
+
+    // const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : "??";
+    const getInitials = (fullName) => {
+    if (!fullName) return "??";
+    const names = fullName.trim().split(' ');
+    if (names.length === 1) return names[0].charAt(0).toUpperCase();
+    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+};
+
+    const filteredCustomers = customers.filter(c => {
+    // Sử dụng Optional Chaining (?.) và cung cấp giá trị mặc định là chuỗi rỗng
+    const name = c?.name ? String(c.name).toLowerCase() : "";
+    const id = c?.id ? String(c.id).toLowerCase() : "";
+    const search = searchTerm ? searchTerm.toLowerCase() : "";
+
+    return name.includes(search) || id.includes(search);
+});
+
     const selectedCustomer = customers.find(c => c.id === itemId);
 
-    // ========================================================================
-    // GIAO DIỆN 2: TRANG CHI TIẾT KHÁCH HÀNG (Hiển thị khi URL có mã CUS-xxx)
-    // ========================================================================
+    if (loading) return <div className="p-5 text-center">Đang tải dữ liệu...</div>;
+
+    // GIAO DIỆN CHI TIẾT
     if (selectedCustomer) {
         const statusStyle = getStatusStyle(selectedCustomer.status);
         const memStyle = getMembershipStyle(selectedCustomer.membership);
-
         return (
-            <div className="card border-0 shadow-sm rounded-4 p-4 position-relative">
-                {/* Header: Nút Quay lại & Avatar */}
+            <div className="card border-0 shadow-sm rounded-4 p-4">
                 <div className="d-flex align-items-center mb-4 pb-3 border-bottom">
-                    <button 
-                        className="btn btn-light rounded-circle d-flex justify-content-center align-items-center me-4 shadow-none border" 
-                        style={{ width: '40px', height: '40px' }}
-                        onClick={handleBackToCustomers}
-                    >
-                        <BsArrowLeft className="fs-5 text-dark" />
+                    <button className="btn btn-light rounded-circle me-4 border" onClick={() => navigate('/admin/users')}>
+                        <BsArrowLeft />
                     </button>
-                    
                     <div className="d-flex align-items-center w-100">
-                        <div className="rounded-circle d-flex justify-content-center align-items-center text-white fw-bold me-3 shadow-sm" style={{ width: '60px', height: '60px', backgroundColor: '#5932ea', fontSize: '1.5rem' }}>
-                            {getInitials(selectedCustomer.name)}
+                        <div className="rounded-circle d-flex justify-content-center align-items-center text-white fw-bold me-3 shadow-sm" style={{ width: '60px', height: '60px', backgroundColor: '#5932ea' }}>
+                            {getInitials(selectedCustomer.fullName)}
                         </div>
                         <div>
-                            <h4 className="fw-bold mb-1 text-dark">{selectedCustomer.name}</h4>
-                            <p className="text-muted mb-0">Mã KH: <span className="text-primary">{selectedCustomer.id}</span></p>
+                            <h4 className="fw-bold mb-1">{selectedCustomer.fullName}</h4>
+                            <p className="text-muted mb-0">Mã KH: {selectedCustomer.id}</p>
                         </div>
+                        <button className="btn btn-outline-danger ms-auto" onClick={() => handleDelete(selectedCustomer.id)}>
+                            <BsTrash className="me-2"/>Xóa khách hàng
+                        </button>
                     </div>
                 </div>
 
-                {/* Grid 3 cột thống kê */}
-                <div className="row g-4 mb-5">
-                    {/* Cột 1: Thông tin cá nhân */}
+                <div className="row g-4">
                     <div className="col-lg-4">
-                        <div className="card h-100 border rounded-4 shadow-sm p-4">
-                            <h6 className="fw-bold d-flex align-items-center mb-4 text-dark">
-                                <BsPeople className="me-2 fs-5" style={{color: '#5932ea'}}/> Thông tin liên hệ
-                            </h6>
-                            <p className="mb-3 text-muted"><BsEnvelope className="me-2 text-dark"/> {selectedCustomer.email}</p>
-                            <p className="mb-3 text-muted"><BsTelephone className="me-2 text-dark"/> {selectedCustomer.phone}</p>
-                            <p className="mb-0 text-muted"><BsCalendarDate className="me-2 text-dark"/> {selectedCustomer.dob} <span className="fw-bold text-dark">({calculateAge(selectedCustomer.dob)} tuổi)</span></p>
+                        <div className="card h-100 border rounded-4 p-4">
+                            <h6 className="fw-bold mb-4"><BsPeople className="me-2"/> Thông tin</h6>
+                            <p className="text-muted"><BsEnvelope className="me-2"/> {selectedCustomer.email}</p>
+                            <p className="text-muted"><BsTelephone className="me-2"/> {selectedCustomer.phone}</p>
+                            <p className="text-muted"><BsCalendarDate className="me-2"/> {selectedCustomer.dob}</p>
                         </div>
                     </div>
-
-                    {/* Cột 2: Phân loại tài khoản (Có thể Click) */}
                     <div className="col-lg-4">
-                        <div className="card h-100 border rounded-4 shadow-sm p-4">
-                            <h6 className="fw-bold d-flex align-items-center mb-4 text-dark">
-                                <BsAward className="me-2 fs-5 text-warning"/> Cấp bậc tài khoản
-                            </h6>
-                            <div className="d-flex justify-content-between align-items-center mb-3">
-                                <span className="text-muted fw-bold">Hạng thành viên:</span>
-                                <span 
-                                    className="px-3 py-1 rounded-2 fw-bold" 
-                                    onClick={() => handleToggleMembership(selectedCustomer.id)}
-                                    title="Click để đổi hạng"
-                                    style={{ backgroundColor: memStyle.bg, color: memStyle.color, border: memStyle.border, cursor: 'pointer', userSelect: 'none' }}
-                                >
-                                    {selectedCustomer.membership}
-                                </span>
-                            </div>
-                            <div className="d-flex justify-content-between align-items-center">
-                                <span className="text-muted fw-bold">Trạng thái:</span>
-                                <span 
-                                    className="px-3 py-1 rounded-2 fw-bold" 
-                                    onClick={() => handleToggleStatus(selectedCustomer.id)}
-                                    title="Click để đổi trạng thái"
-                                    style={{ backgroundColor: statusStyle.bg, color: statusStyle.color, border: statusStyle.border, cursor: 'pointer', userSelect: 'none' }}
-                                >
-                                    {selectedCustomer.status}
-                                </span>
-                            </div>
+                        <div className="card h-100 border rounded-4 p-4 text-center">
+                            <h6 className="fw-bold mb-3">Hạng: {selectedCustomer.membership}</h6>
+                            <button className="btn btn-sm btn-outline-primary mb-2" onClick={() => handleToggleMembership(selectedCustomer.id)}>Đổi hạng</button>
+                            <hr />
+                            <h6 className="fw-bold mb-3">Trạng thái: {selectedCustomer.status}</h6>
+                            <button className={`btn btn-sm ${selectedCustomer.status === 'Hoạt động' ? 'btn-outline-danger' : 'btn-outline-success'}`} onClick={() => handleToggleStatus(selectedCustomer.id)}>
+                                {selectedCustomer.status === 'Hoạt động' ? 'Khóa tài khoản' : 'Mở tài khoản'}
+                            </button>
                         </div>
                     </div>
-
-                    {/* Cột 3: Lịch sử chi tiêu */}
-                    <div className="col-lg-4">
-                        <div className="card h-100 border rounded-4 shadow-sm p-4 bg-light border-0">
-                            <h6 className="fw-bold d-flex align-items-center mb-4 text-dark">
-                                <BsCartCheck className="me-2 fs-5 text-success"/> Thống kê chi tiêu
-                            </h6>
-                            <div className="d-flex justify-content-between mb-3">
-                                <span className="text-muted">Tổng sản phẩm đã mua:</span>
-                                <span className="fw-bold text-dark fs-5">{selectedCustomer.totalItems}</span>
-                            </div>
-                            <div className="d-flex justify-content-between pt-3 border-top">
-                                <span className="text-muted mt-1">Tổng tiền tích lũy:</span>
-                                <span className="fw-bold fs-3" style={{color: '#5932ea'}}>{selectedCustomer.totalSpent}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Bảng Lịch sử mua hàng */}
-                <h5 className="fw-bold mb-3 d-flex align-items-center">
-                    <BsClockHistory className="me-2 text-primary"/> Lịch sử mua hàng gần đây
-                </h5>
-                <div className="table-responsive border rounded-4 overflow-hidden">
-                    <table className="table table-hover align-middle mb-0">
-                        <thead className="bg-light">
-                            <tr>
-                                <th className="text-muted fw-bold py-3 ps-4 border-bottom-0">Mã đơn</th>
-                                <th className="text-muted fw-bold py-3 border-bottom-0">Ngày mua</th>
-                                <th className="text-muted fw-bold py-3 border-bottom-0">Sản phẩm chính</th>
-                                <th className="text-muted fw-bold py-3 border-bottom-0 text-center">Trạng thái</th>
-                                <th className="text-muted fw-bold py-3 border-bottom-0 text-end pe-4">Tổng tiền</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {dummyPurchaseHistory.map((order, idx) => (
-                                <tr key={idx}>
-                                    <td className="py-3 ps-4 fw-bold text-dark">{order.orderId}</td>
-                                    <td className="py-3 text-muted">{order.date}</td>
-                                    <td className="py-3 text-muted fst-italic">{order.items}</td>
-                                    <td className="py-3 text-center">
-                                        <span className="badge bg-success bg-opacity-10 text-success border border-success rounded-1 px-2 py-1">{order.status}</span>
-                                    </td>
-                                    <td className="py-3 text-end pe-4 fw-bold text-dark">{order.total}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
                 </div>
             </div>
         );
     }
 
-    // ========================================================================
-    // GIAO DIỆN 1: TRANG DANH SÁCH KHÁCH HÀNG
-    // ========================================================================
+    // GIAO DIỆN DANH SÁCH
     return (
-        <div className="card border-0 shadow-sm rounded-4 p-4 position-relative">
-            
-            {/* --- HEADER & THANH CÔNG CỤ --- */}
+        <div className="card border-0 shadow-sm rounded-4 p-4">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h4 className="fw-bold mb-1 d-flex align-items-center">
-                        <BsPeople className="me-2 text-primary" style={{ color: '#5932ea' }}/> Tất cả Khách hàng
-                    </h4>
-                    <p className="text-success mb-0 fw-bold" style={{ fontSize: '0.9rem' }}>Quản lý và phân hạng thành viên</p>
-                </div>
-
-                <div className="d-flex gap-3 align-items-center">
-                    <div className="input-group bg-light rounded-3" style={{ width: '250px', border: 'none' }}>
-                        <span className="input-group-text bg-transparent border-0 pe-1"><BsSearch className="text-muted" /></span>
-                        <input type="text" className="form-control border-0 bg-transparent shadow-none" placeholder="Tìm kiếm khách hàng..." />
-                    </div>
+                <h4 className="fw-bold mb-0"><BsPeople className="me-2" style={{color: '#5932ea'}}/> Quản lý Khách hàng</h4>
+                <div className="input-group" style={{ width: '300px' }}>
+                    <span className="input-group-text bg-light border-0"><BsSearch /></span>
+                    <input 
+                        type="text" 
+                        className="form-control bg-light border-0 shadow-none" 
+                        placeholder="Tìm theo tên hoặc mã..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
             </div>
 
-            {/* --- BẢNG KHÁCH HÀNG --- */}
             <div className="table-responsive">
-                <table className="table table-hover align-middle mb-0">
+                <table className="table table-hover align-middle">
                     <thead>
-                        <tr>
-                            <th className="text-muted fw-normal border-bottom-0 pb-3">Tên Khách hàng</th>
-                            <th className="text-muted fw-normal border-bottom-0 pb-3">Số điện thoại</th>
-                            <th className="text-muted fw-normal border-bottom-0 pb-3">Email</th>
-                            <th className="text-muted fw-normal border-bottom-0 pb-3 text-center">Hạng</th>
-                            <th className="text-muted fw-normal border-bottom-0 pb-3 text-center">Trạng thái</th>
-                            <th className="text-muted fw-normal border-bottom-0 pb-3 text-end" style={{ minWidth: '100px' }}>Hành động</th>
+                        <tr className="text-muted">
+                            <th>Khách hàng</th>
+                            <th>Liên hệ</th>
+                            <th className="text-center">Hạng</th>
+                            <th className="text-center">Trạng thái</th>
+                            <th className="text-end">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {customers.map((customer) => {
-                            const statusStyle = getStatusStyle(customer.status);
-                            const memStyle = getMembershipStyle(customer.membership);
-                            
-                            return (
-                                <tr key={customer.id}>
-                                    <td className="py-3">
-                                        <div className="d-flex align-items-center">
-                                            <div className="rounded-circle d-flex justify-content-center align-items-center text-white fw-bold me-3" style={{ width: '40px', height: '40px', backgroundColor: '#5932ea', fontSize: '0.9rem' }}>
-                                                {getInitials(customer.name)}
-                                            </div>
-                                            <div>
-                                                <p className="fw-bold mb-0 text-dark">{customer.name}</p>
-                                                <small className="text-muted">{customer.id}</small>
-                                            </div>
+                        {filteredCustomers.map((customer) => (
+                            <tr key={customer.id}>
+                                <td>
+                                    <div className="d-flex align-items-center">
+                                        <div className="rounded-circle d-flex justify-content-center align-items-center text-white fw-bold me-3" style={{ width: '40px', height: '40px', backgroundColor: '#5932ea' }}>
+                                            {getInitials(customer.fullName)}
                                         </div>
-                                    </td>
-                                    <td className="py-3 fw-medium text-dark">{customer.phone}</td>
-                                    <td className="py-3 text-muted">{customer.email}</td>
-                                    <td className="py-3 text-center">
-                                        {/* CLICK ĐỔI HẠNG */}
-                                        <span 
-                                            className="px-2 py-1 rounded-1 fw-bold" 
-                                            onClick={() => handleToggleMembership(customer.id)}
-                                            title="Click để chuyển hạng"
-                                            style={{ backgroundColor: memStyle.bg, color: memStyle.color, border: memStyle.border, fontSize: '0.75rem', cursor: 'pointer', userSelect: 'none' }}
-                                        >
-                                            {customer.membership}
-                                        </span>
-                                    </td>
-                                    <td className="py-3 text-center">
-                                        {/* CLICK ĐỔI TRẠNG THÁI */}
-                                        <span 
-                                            className="px-3 py-1 rounded-1 fw-bold" 
-                                            onClick={() => handleToggleStatus(customer.id)}
-                                            title="Click để chuyển trạng thái"
-                                            style={{ backgroundColor: statusStyle.bg, color: statusStyle.color, border: statusStyle.border, fontSize: '0.85rem', cursor: 'pointer', userSelect: 'none' }}
-                                        >
-                                            {customer.status}
-                                        </span>
-                                    </td>
-                                    <td className="py-3 text-end">
-                                        {/* NÚT XEM CHI TIẾT (Nhảy trang) */}
-                                        <button 
-                                            className="btn btn-sm btn-light border me-1 shadow-none" 
-                                            title="Xem chi tiết"
-                                            onClick={() => handleViewDetails(customer)}
-                                        >
-                                            <BsEye className="text-primary" />
-                                        </button>
-                                        {/* NÚT SỬA (Giữ nguyên Popup) */}
-                                        <button 
-                                            className="btn btn-sm btn-light border shadow-none" 
-                                            title="Chỉnh sửa"
-                                            onClick={() => handleEditClick(customer)}
-                                        >
-                                            <BsPencilSquare className="text-success" />
-                                        </button>
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                                        <div>
+                                            <div className="fw-bold">{customer.fullName}</div>
+                                            <small className="text-muted">{customer.id}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className="small">{customer.phone}</div>
+                                    <div className="small text-muted">{customer.email}</div>
+                                </td>
+                                <td className="text-center">
+                                    <span className="badge border" style={getMembershipStyle(customer.membership)}>{customer.membership}</span>
+                                </td>
+                                <td className="text-center">
+                                    <span className="badge" style={getStatusStyle(customer.status)}>{customer.status}</span>
+                                </td>
+                                <td className="text-end">
+                                    <button className="btn btn-sm btn-light border me-1" onClick={() => navigate(`/admin/users/${customer.id}`)}><BsEye /></button>
+                                    <button className="btn btn-sm btn-light border me-1 text-success" onClick={() => setEditingCustomer(customer)}><BsPencilSquare /></button>
+                                    <button className="btn btn-sm btn-light border text-danger" onClick={() => handleDelete(customer.id)}><BsTrash /></button>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
 
-            {/* ===================================================================== */}
-            {/* MODAL: CHỈNH SỬA KHÁCH HÀNG (Giữ lại để sửa Tên, ĐT, Email) */}
-            {/* ===================================================================== */}
+            {/* MODAL EDIT TÊN/SĐT/EMAIL */}
             {editingCustomer && (
                 <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
-                    <div className="bg-white rounded-4 shadow-lg p-4" style={{ width: '450px', maxWidth: '90%' }}>
-                        
-                        <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-                            <h5 className="fw-bold mb-0">Sửa thông tin khách hàng</h5>
-                            <button className="btn btn-sm btn-light rounded-circle" onClick={() => setEditingCustomer(null)}>
-                                <BsX className="fs-4" />
-                            </button>
-                        </div>
-
-                        {/* Form điền thông tin */}
-                        <div className="mb-3">
-                            <label className="form-label fw-bold text-muted" style={{ fontSize: '0.9rem' }}>Tên khách hàng</label>
-                            <input type="text" className="form-control shadow-none" name="name" value={editingCustomer.name} onChange={handleInputChange} />
+                    <div className="bg-white rounded-4 shadow-lg p-4" style={{ width: '450px' }}>
+                        <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                            <h5 className="fw-bold mb-0">Sửa thông tin</h5>
+                            <button className="btn btn-sm" onClick={() => setEditingCustomer(null)}><BsX className="fs-4" /></button>
                         </div>
                         <div className="mb-3">
-                            <label className="form-label fw-bold text-muted" style={{ fontSize: '0.9rem' }}>Số điện thoại</label>
-                            <input type="text" className="form-control shadow-none" name="phone" value={editingCustomer.phone} onChange={handleInputChange} />
+                            <label className="form-label small fw-bold">Tên khách hàng</label>
+                            <input type="text" className="form-control" value={editingCustomer.name} onChange={(e) => setEditingCustomer({...editingCustomer, name: e.target.value})} />
+                        </div>
+                        <div className="mb-3">
+                            <label className="form-label small fw-bold">Số điện thoại</label>
+                            <input type="text" className="form-control" value={editingCustomer.phone} onChange={(e) => setEditingCustomer({...editingCustomer, phone: e.target.value})} />
                         </div>
                         <div className="mb-4">
-                            <label className="form-label fw-bold text-muted" style={{ fontSize: '0.9rem' }}>Email</label>
-                            <input type="email" className="form-control shadow-none" name="email" value={editingCustomer.email} onChange={handleInputChange} />
+                            <label className="form-label small fw-bold">Email</label>
+                            <input type="email" className="form-control" value={editingCustomer.email} onChange={(e) => setEditingCustomer({...editingCustomer, email: e.target.value})} />
                         </div>
-
-                        {/* Nút hành động */}
-                        <div className="d-flex justify-content-end gap-2 pt-3 border-top">
-                            <button className="btn btn-light fw-bold px-4" onClick={() => setEditingCustomer(null)}>Hủy</button>
-                            <button className="btn text-white fw-bold px-4" style={{ backgroundColor: '#5932ea' }} onClick={handleSaveChanges}>
-                                Lưu thay đổi
-                            </button>
+                        <div className="d-flex justify-content-end gap-2">
+                            <button className="btn btn-light" onClick={() => setEditingCustomer(null)}>Hủy</button>
+                            <button className="btn text-white" style={{ backgroundColor: '#5932ea' }} onClick={handleSaveChanges}>Lưu</button>
                         </div>
                     </div>
                 </div>
