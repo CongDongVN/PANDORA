@@ -1,35 +1,119 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react'; // Thêm useState
 import { useParams, Link } from 'react-router-dom';
+import axios from 'axios'; // Đảm bảo bạn đã cài đặt axios: npm install axios
 
-// Import CSS
 import './ProductDetail.css';
-
-// Import dữ liệu
-import { products } from '../../data/categoriesData';
-import { productDetails } from '../../data/productDetailsData';
-
-// Import 4 Component con (Bạn đã xác nhận là chúng ổn)
 import ProductGallery from './ProductGallery';
 import ProductInfo from './ProductInfo';
 import RelatedProducts from './RelatedProducts';
 import ProductReviews from './ProductReviews';
 
+// const ProductDetail = () => {
+//   const { id } = useParams();
+//   const [product, setProduct] = useState(null); // State lưu dữ liệu từ API
+//   const [loading, setLoading] = useState(true); // State chờ load dữ liệu
+
+//   // 1. Gọi API khi ID thay đổi
+//   useEffect(() => {
+//     const fetchProduct = async () => {
+//       try {
+//         setLoading(true);
+        
+//         const response = await axios.get(`https://localhost:7221/api/products/${id}`);
+//         setProduct(response.data);
+//       } catch (error) {
+//         console.error("Lỗi khi lấy chi tiết sản phẩm:", error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchProduct();
+//     window.scrollTo(0, 0);
+//   }, [id]);
+
+//   // 2. Trạng thái Loading
+//   if (loading) return <div className="container mt-5 text-center">Đang tải sản phẩm...</div>;
+
+//   // 3. Nếu không tìm thấy sản phẩm
+//   if (!product) {
+//     return (
+//       <div className="container mt-5 pt-5 text-center" style={{ minHeight: '60vh' }}>
+//         <h2 className="fw-bold text-danger mb-3">Opps! Không tìm thấy sản phẩm.</h2>
+//         <Link to="/" className="btn btn-dark px-4 py-2">Quay lại Trang Chủ</Link>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="product-detail-page container">
+//       {/* 1. Breadcrumb */}
+//       <nav className="detail-breadcrumb mt-4 mb-4">
+//         <Link to="/" className="text-secondary text-decoration-none hover-dark fw-bold">Trang chủ</Link> / 
+//         <span className="text-secondary fw-bold"> {product.categoryName} </span> / 
+//         <span className="text-dark fw-bold">{product.name}</span>
+//       </nav>
+
+//       {/* 2. KHU VỰC NỘI DUNG CHÍNH */}
+//       <div className="product-main-layout">
+//         <div className="gallery-section-wrapper">
+//           {/* Truyền mảng ImageUrls từ API vào Gallery */}
+//           <ProductGallery 
+//             mainImage={product.imageUrls[0]} 
+//             galleryImages={product.imageUrls} 
+//           />
+//         </div>
+        
+//         <div className="info-section-wrapper">
+//           {/* Truyền object product trực tiếp vào ProductInfo */}
+//           <ProductInfo 
+//             product={product} 
+//           />
+//         </div>
+//       </div>
+
+//       {/* 3. Sản phẩm liên quan (Truyền ID category để filter ở Backend nếu cần) */}
+//       <div className="related-section-wrapper mt-5">
+//         <RelatedProducts 
+//           currentCategory={product.categoryName} 
+//           currentProductId={product.id} 
+//         />
+//       </div>
+
+//       <div className="reviews-section-wrapper mt-5">
+//         <ProductReviews productId={product.id} />
+//       </div>
+//     </div>
+//   );
+// };
+// ... (các import giữ nguyên)
+
 const ProductDetail = () => {
   const { id } = useParams();
-  const productId = Number(id);
-  
-  // Tìm sản phẩm
-  const basicInfo = products.find((item) => item.id === productId);
-  
-  // Dữ liệu chi tiết, có thể là array hoặc object
-  const detailInfo = productDetails ? productDetails[productId] : null;
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Cuộn lên đầu trang khi chuyển sản phẩm
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [productId]);
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        // Đảm bảo URL này khớp với cấu hình port của Backend .NET của bạn
+        const response = await axios.get(`https://localhost:7221/api/products/${id}`);
+        setProduct(response.data);
+      } catch (error) {
+        console.error("Lỗi khi lấy chi tiết sản phẩm:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!basicInfo) {
+    fetchProduct();
+    window.scrollTo(0, 0);
+  }, [id]);
+
+  if (loading) return <div className="container mt-5 text-center">Đang tải sản phẩm...</div>;
+
+  if (!product) {
     return (
       <div className="container mt-5 pt-5 text-center" style={{ minHeight: '60vh' }}>
         <h2 className="fw-bold text-danger mb-3">Opps! Không tìm thấy sản phẩm.</h2>
@@ -39,48 +123,39 @@ const ProductDetail = () => {
   }
 
   return (
-    /* ĐÃ SỬA: Đảm bảo class tổng là product-detail-page */
     <div className="product-detail-page container">
-      
-      {/* 1. Breadcrumb (Đồng bộ với CSS) */}
       <nav className="detail-breadcrumb mt-4 mb-4">
         <Link to="/" className="text-secondary text-decoration-none hover-dark fw-bold">Trang chủ</Link> / 
-        <Link to={`/${basicInfo.type}`} className="text-secondary text-decoration-none hover-dark fw-bold"> {basicInfo.type.replace('-', ' ')}</Link> / 
-        <span className="text-dark fw-bold">{basicInfo.name}</span>
+        <span className="text-secondary fw-bold"> {product.categoryName} </span> / 
+        <span className="text-dark fw-bold">{product.name}</span>
       </nav>
 
-      {/* 2. KHU VỰC NỘI DUNG CHÍNH (MAIN SECTION)
-          ĐÃ SỬA: Thay đổi 'row' thành 'product-main-layout' để chia cột
-      */}
       <div className="product-main-layout">
-        
-        {/* ĐÃ SỬA: Thay đổi 'col-md-6' thành 'gallery-section-wrapper' */}
         <div className="gallery-section-wrapper">
           <ProductGallery 
-            mainImage={basicInfo.image} 
-            galleryImages={detailInfo ? detailInfo.gallery : []} 
-          />
+  // Ảnh chính lấy từ trường PrimaryImageUrl của Backend
+  mainImage={product.primaryImageUrl} 
+  // Danh sách toàn bộ 5 ảnh
+  galleryImages={product.imageUrls} 
+/>
         </div>
         
-        {/* ĐÃ SỬA: Thay đổi 'col-md-6' thành 'info-section-wrapper' */}
         <div className="info-section-wrapper">
-          <ProductInfo 
-            basicInfo={basicInfo} 
-            detailInfo={detailInfo} 
-          />
+          <ProductInfo product={product} />
         </div>
       </div>
 
-      {/* 3. Khu vực Sản phẩm liên quan */}
+      {/* Các phần khác giữ nguyên */}
       <div className="related-section-wrapper mt-5">
-        <RelatedProducts currentCategory={basicInfo.type} currentProductId={basicInfo.id} />
+        <RelatedProducts 
+          currentCategory={product.categoryName} 
+          currentProductId={product.id} 
+        />
       </div>
 
-      {/* 4. Khu vực Đánh giá */}
       <div className="reviews-section-wrapper mt-5">
-        <ProductReviews />
+        <ProductReviews productId={product.id} />
       </div>
-
     </div>
   );
 };

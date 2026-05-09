@@ -1,141 +1,207 @@
-/* 1. Đảm bảo toàn bộ ứng dụng dùng chung một hệ quy chiếu */
+/* ==========================================================================
+   1. CẤU HÌNH CHUNG (GLOBAL)
+   ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Optima&family=Playfair+Display:wght@400;700&display=swap');
+
 .px-custom {
-  padding-left: 6.6% !important; 
-  padding-right: 6.6% !important;
-}
-.category-item {
-  cursor: pointer;
-  transition: transform 0.3s ease;
+    padding-left: 6.6% !important; 
+    padding-right: 6.6% !important;
 }
 
-.category-item:hover {
-  transform: translateY(-5px); /* Hiệu ứng nhấc lên nhẹ khi di chuột vào */
+.pandora-container {
+    font-family: 'Arial', sans-serif;
+    color: #222;
 }
 
-.category-image-wrapper {
-  background-color: #fff; /* Nền trắng sạch sẽ */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 1 / 1; /* Giữ khung hình vuông */
-  overflow: hidden;
+/* ==========================================================================
+   2. HIỆU ỨNG DANH MỤC TRÒN (6 DANH MỤC - HOME)
+   ========================================================================== */
+.category-fade-item {
+    opacity: 0;
+    transform: translateY(80px) scale(0.8);
+    transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
 }
 
-.category-img {
-  max-height: 80%; /* Giữ ảnh không quá to, tạo khoảng trắng sang trọng */
-  object-fit: contain;
+.category-fade-item.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.category-circle-wrapper {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 15px;
+    background-color: #fff;
+    border-radius: 50% !important; 
+    overflow: hidden !important; 
+    border: 1px solid #eee;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-circle-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50% !important;
+    transition: transform 0.5s ease;
+}
+
+.category-hover:hover .category-circle-wrapper {
+    transform: translateY(-12px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+    border-color: #f48fb1;
+}
+
+.category-hover:hover img {
+    transform: scale(1.1);
+}
+
+.category-hover:hover .category-name {
+    color: #f48fb1;
 }
 
 .category-name {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  color: #333;
-  margin-top: 10px;
-  text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #333;
+    margin-top: 10px;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
 }
 
-/* Responsive cho mobile */
-@media (max-width: 576px) {
-  .category-name {
-    font-size: 10px;
-  }
+/* ==========================================================================
+   3. HIỆU ỨNG 4 SẢN PHẨM NỔI BẬT (HOVER XEM NHANH)
+   ========================================================================== */
+/* Khung thẻ sản phẩm */
+.featured-product-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: transform 0.3s ease;
 }
 
-/* 2. Header: Nếu component Header của bạn có banner màu hồng bên trong */
-.header-pink-banner {
-  /* Thay vì margin, hãy dùng padding nếu bạn muốn màu nền hồng vẫn tràn ra lề, 
-     hoặc dùng margin nếu muốn cả khối hồng thu vào trong */
-  margin-left: 6.6% !important; 
-  margin-right: 6.6% !important;
+/* Khung ảnh vuông */
+.featured-product-img-wrapper {
+    background-color: #f6f6f6;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden !important;
 }
 
-/* 3. Xử lý Row để ảnh sản phẩm sát lề */
-.product-list-row {
-  /* Quan trọng: Bootstrap Row có margin âm -1.5rem (hoặc -0.75rem) 
-     Nó sẽ làm ảnh sản phẩm "nhô" ra ngoài lề 6.6% một chút. 
-     Ta phải đưa nó về 0 để mép ảnh thẳng hàng với mép chữ. */
-  /* margin-left: 0 !important;
-  margin-right: 0 !important; */
-  
-  /* Khoảng cách giữa các card sản phẩm */
-  --bs-gutter-x: 1.5rem; 
+.featured-product-img-wrapper img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    mix-blend-mode: multiply !important;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* 4. Loại bỏ padding dư thừa của cột đầu và cuối trong row */
-/* Điều này giúp sản phẩm số 1 sát lề trái, sản phẩm số 4 sát lề phải */
-.product-list-row > .col-lg-3:first-child {
-  padding-left: 0 !important;
-}
-.product-list-row > .col-lg-3:last-child {
-  padding-right: 0 !important;
+/* Nút Xem Nhanh (Xuất hiện mượt mà giống trang product) */
+.featured-quick-view-btn {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    background-color: #111;
+    color: #fff;
+    border: none;
+    padding: 12px 0;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    z-index: 10;
+    
+    /* Hiệu ứng ẩn ban đầu */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
 }
 
-
-.pandora-container {
-  font-family: 'Arial', sans-serif;
-  color: #222;
+/* Hover vào card: Ảnh zoom, Nút hiện lên */
+.featured-product-card:hover .featured-product-img-wrapper img {
+    transform: scale(1.08);
 }
 
-/* Header style */
-.brand-header {
-  text-align: center;
-  padding: 40px 0;
+.featured-product-card:hover .featured-quick-view-btn {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Thông tin sản phẩm bên dưới */
+.featured-product-info {
+    padding: 15px 0;
+    text-align: left;
+}
+
+.featured-product-name {
+    font-size: 13px;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.featured-product-price {
+    font-size: 14px;
+    font-weight: 500;
+    color: #111;
+}
+
+/* ==========================================================================
+   4. LAYOUT CHUNG & BRANDING
+   ========================================================================== */
+.brand-logo {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 80px;
+    letter-spacing: 12px;
+    line-height: 1;
+    margin: 0;
+    text-transform: uppercase;
 }
 
 .kham-pha {
-  font-size: 14px;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  margin-bottom: 5px;
+    font-size: 14px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
 }
 
-.brand-logo {
-  font-family: 'Playfair Display', serif; /* Hoặc font có chân tương tự Pandora */
-  font-weight: 700;
-  font-size: 80px;
-  letter-spacing: 12px;
-  line-height: 1;
-  margin: 0;
-  text-transform: uppercase;
+.product-list-row {
+    --bs-gutter-x: 1.5rem; 
 }
 
-/* Card style */
-.category-card {
-  border: none;
-  border-radius: 0;
-  margin-bottom: 30px;
-}
-
-.category-card img {
-  border-radius: 0; /* Ảnh 2 vuông vức, không bo góc */
-  width: 100%;
-  height: auto;
-}
-
-.category-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-top: 15px;
-  margin-bottom: 5px;
-  text-align: left; /* Căn trái theo ảnh 2 */
-}
+.product-list-row > .col-lg-3:first-child { padding-left: 0 !important; }
+.product-list-row > .col-lg-3:last-child { padding-right: 0 !important; }
 
 .category-link {
-  color: #000;
-  font-size: 12px;
-  font-weight: 700;
-  text-decoration: none;
-  text-transform: uppercase;
-  border-bottom: 1.5px solid #000; /* Đường gạch chân sát chữ */
-  display: inline-block;
-  padding-bottom: 2px;
+    color: #000;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-bottom: 1.5px solid #000;
+    display: inline-block;
+    padding-bottom: 2px;
 }
 
-.category-link:hover {
-  color: #333;
-}
+/* ==========================================================================
+   5. TRANG ĐĂNG NHẬP & ĐĂNG KÝ (AUTH)
+   ========================================================================== */
 .login-page-container {
     background-color: #fff;
     font-family: 'Arial', sans-serif;
@@ -153,7 +219,6 @@
     font-weight: 500;
 }
 
-/* Tùy chỉnh Tabs */
 .custom-tabs .nav-link {
     color: #999 !important;
     font-weight: bold;
@@ -169,75 +234,6 @@
 
 .auth-card {
     border: 1px solid #dee2e6;
-}
-
-/* Tùy chỉnh Input */
-.custom-input {
-    border-radius: 0;
-    border: 1px solid #ced4da;
-    height: 50px;
-    padding-top: 15px;
-}
-
-.floating-label {
-    font-size: 11px;
-    font-weight: bold;
-    position: absolute;
-    top: 5px;
-    left: 12px;
-    z-index: 5;
-    color: #666;
-}
-
-.password-wrapper {
-    position: relative;
-}
-
-.password-icon {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #333;
-}
-
-.forgot-link {
-    font-size: 13px;
-    text-decoration: underline;
-}
-
-.login-btn {
-    border-radius: 4px;
-    letter-spacing: 1px;
-}
-
-.divider-text {
-    position: relative;
-    font-weight: bold;
-}
-
-.google-btn {
-    background-color: #ffcdd2; /* Màu hồng nhạt như hình */
-    border: none;
-    color: #000;
-    font-weight: bold;
-    font-size: 13px;
-}
-
-.facebook-btn {
-    background-color: #1877f2;
-    border: none;
-    font-weight: bold;
-    font-size: 13px;
-}
-
-.google-btn:hover { background-color: #ef9a9a; color: #000; }
-
-/* Tái sử dụng các class từ trang Login */
-.auth-card {
-    border: 1px solid #dee2e6;
-    border-top: none; /* Chỉ hiện viền 3 cạnh dưới Tab */
 }
 
 .custom-input {
@@ -257,6 +253,42 @@
     color: #666;
 }
 
+.password-wrapper { position: relative; }
+
+.password-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #333;
+}
+
+.google-btn {
+    background-color: #ffcdd2; 
+    border: none;
+    color: #000;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.google-btn:hover { 
+    background-color: #ef9a9a; 
+    color: #000; 
+}
+
+.facebook-btn {
+    background-color: #1877f2;
+    border: none;
+    font-weight: bold;
+    font-size: 13px;
+    color: #fff;
+}
+
+.divider-text {
+    position: relative;
+    font-weight: bold;
+}
 
 .divider-text span {
     background: #fff;
@@ -274,4 +306,13 @@
     height: 1px;
     background: #dee2e6;
     z-index: 0;
+}
+
+/* ==========================================================================
+   6. RESPONSIVE
+   ========================================================================== */
+@media (max-width: 576px) {
+    .category-name {
+        font-size: 10px;
+    }
 }
