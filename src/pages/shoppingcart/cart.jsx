@@ -90,7 +90,13 @@ const Cart = () => {
                                 <div key={item.productId} className="cart-item-row pb-4 mb-4 border-bottom">
                                     <div className="row">
                                         <div className="col-3">
-                                            <img src={item.productImage} alt={item.productName} className="img-fluid bg-light" />
+                                            <img 
+    src={item.productImage || "https://via.placeholder.com/150?text=No+Image"} 
+    alt={item.productName} 
+    className="img-fluid bg-light rounded" 
+    style={{ objectFit: 'cover', width: '100%', aspectRatio: '1/1' }}
+    onError={(e) => { e.target.src = "https://via.placeholder.com/150?text=No+Image"; }}
+/>
                                         </div>
                                         <div className="col-9">
                                             <div className="d-flex justify-content-between align-items-start">

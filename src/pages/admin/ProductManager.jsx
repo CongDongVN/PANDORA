@@ -13,10 +13,14 @@ const ProductManager = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Ảnh: File mới chọn và Ảnh cũ trên server
+  // 1. STATE CHO ẢNH ĐẠI DIỆN (Chỉ 1 file)
+  const [primaryFile, setPrimaryFile] = useState(null);
+  const [primaryPreviewUrl, setPrimaryPreviewUrl] = useState("");
+
+  // 2. STATE CHO ẢNH MÔ TẢ (Nhiều file)
   const [selectedFiles, setSelectedFiles] = useState([]); 
   const [previewUrls, setPreviewUrls] = useState([]);     
-  const [existingImages, setExistingImages] = useState([]); // Chứa mảng object {id, imageUrl}
+  const [existingImages, setExistingImages] = useState([]); 
 
   const [currentProduct, setCurrentProduct] = useState({
     id: 0, name: "", price: 0, stock: 0, categoryId: 0, sku: "", description: "",
@@ -51,7 +55,21 @@ const ProductManager = () => {
     init();
   }, [fetchProducts]);
 
-  // --- XỬ LÝ HÌNH ẢNH MỚI ---
+  // --- XỬ LÝ ẢNH ĐẠI DIỆN ---
+  const handlePrimaryFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPrimaryFile(file);
+      setPrimaryPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const removePrimaryFile = () => {
+    setPrimaryFile(null);
+    setPrimaryPreviewUrl("");
+  };
+
+  // --- XỬ LÝ ẢNH MÔ TẢ ---
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     setSelectedFiles([...selectedFiles, ...files]);
@@ -64,14 +82,10 @@ const ProductManager = () => {
     setPreviewUrls(previewUrls.filter((_, i) => i !== index));
   };
 
-  // --- XỬ LÝ XÓA ẢNH CŨ TRÊN SERVER (Đã cập nhật theo yêu cầu) ---
   const handleDeleteExistingImage = async (imageId) => {
     if (window.confirm("Bạn có chắc muốn xóa ảnh này vĩnh viễn?")) {
       try {
-        // Gọi API xóa ảnh theo ID của ảnh
-        await axios.delete(`${API_BASE}/ProductImages/${imageId}`);
-        
-        // Xóa thành công trên server thì cập nhật lại UI
+        await axios.delete(`${API_BASE}/Products/delete-image/${imageId}`);
         setExistingImages(existingImages.filter(img => img.id !== imageId));
       } catch (err) {
         alert("Không thể xóa ảnh cũ! Vui lòng kiểm tra lại Backend.");
@@ -89,7 +103,11 @@ const ProductManager = () => {
 
   const handleOpenAdd = () => {
     setIsEditing(false);
+    
+    // Reset toàn bộ state ảnh
+    setPrimaryFile(null); setPrimaryPreviewUrl("");
     setSelectedFiles([]); setPreviewUrls([]); setExistingImages([]);
+    
     setCurrentProduct({ id: 0, name: "", price: 0, stock: 0, categoryId: categories[0]?.id || 0, sku: "", description: "" });
     setIsModalOpen(true);
   };
@@ -106,8 +124,15 @@ const ProductManager = () => {
       description: product.description || ""
     });
     
-    // Nạp ảnh cũ từ product
-    setExistingImages(product.images || []); 
+    // Phân tách ảnh cũ: Ảnh chính và Ảnh mô tả để hiển thị
+    const allImages = product.images || [];
+    const mainImgUrl = product.primaryImageUrl; 
+    
+    // Hiển thị ảnh chính hiện tại lên ô Review (Chỉ lấy URL để xem, file = null)
+    setPrimaryFile(null);
+    setPrimaryPreviewUrl(mainImgUrl || "");
+
+    setExistingImages(allImages); 
     setSelectedFiles([]);
     setPreviewUrls([]);
     setIsModalOpen(true);
@@ -124,6 +149,12 @@ const ProductManager = () => {
     fd.append("Description", currentProduct.description || "");
     fd.append("SKU", currentProduct.sku);
 
+    // Append Ảnh Đại Diện
+    if (primaryFile) {
+      fd.append("PrimaryImage", primaryFile);
+    }
+
+    // Append Ảnh Mô Tả
     if (selectedFiles.length > 0) {
       selectedFiles.forEach(file => fd.append("Images", file));
     }
@@ -134,8 +165,8 @@ const ProductManager = () => {
       if (isEditing) {
         await axios.put(`${API_BASE}/Products/${currentProduct.id}`, fd, config);
       } else {
-        if (selectedFiles.length === 0) {
-          alert("Vui lòng chọn ít nhất một ảnh cho sản phẩm mới!");
+        if (!primaryFile) {
+          alert("Vui lòng chọn ảnh đại diện cho sản phẩm mới!");
           return;
         }
         await axios.post(`${API_BASE}/Products`, fd, config);
@@ -170,22 +201,15 @@ const ProductManager = () => {
         <tbody>
           {products.map(p => (
             <tr key={p.id}>
-              {/* <td>
-                <img 
-                  src={p.imageUrls && p.imageUrls.length > 0 ? p.imageUrls[0] : "https://via.placeholder.com/50"} 
-                  width="50" height="50" className="rounded shadow-sm" style={{objectFit:'cover'}} alt="thumb" 
-                />
-              </td> */}
               <td>
-  <img 
-    // Dùng primaryImageUrl trả về từ backend thay vì mảng imageUrls[0]
-    src={p.primaryImageUrl || "https://via.placeholder.com/50"} 
-    width="50" height="50" 
-    className="rounded shadow-sm" 
-    style={{objectFit:'cover'}} 
-    alt="thumb" 
-  />
-</td>
+                <img 
+                  src={p.primaryImageUrl || "https://via.placeholder.com/50"} 
+                  width="50" height="50" 
+                  className="rounded shadow-sm" 
+                  style={{objectFit:'cover'}} 
+                  alt="thumb" 
+                />
+              </td>
               <td>
                 <div className="fw-bold">{p.name}</div>
                 <small className="text-muted">{p.sku}</small>
@@ -216,7 +240,7 @@ const ProductManager = () => {
                     <input type="text" className="form-control shadow-none" value={currentProduct.name} onChange={e => setCurrentProduct({...currentProduct, name: e.target.value})} />
                   </div>
                   <div className="col-md-4">
-                    <label className="fw-bold small">Mã SKU (Cố định)</label>
+                    <label className="fw-bold small">Mã SKU</label>
                     <input 
                       type="text" 
                       className={`form-control shadow-none ${isEditing ? 'bg-light text-muted' : ''}`} 
@@ -242,63 +266,89 @@ const ProductManager = () => {
                     >
                       <option value="" disabled>-- Chọn danh mục --</option>
                       {categories.map(c => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                        </option>
+                        <option key={c.id} value={c.id}>{c.name}</option>
                       ))}
                     </select>
                   </div>
 
-                  {/* KHU VỰC QUẢN LÝ HÌNH ẢNH (Đã cập nhật theo yêu cầu) */}
-                  <div className="col-12">
-                    <label className="fw-bold small text-muted">Hình ảnh sản phẩm</label>
-                    <div className="border rounded p-3 bg-light">
-                      <input 
-                        type="file" 
-                        multiple 
-                        className="form-control mb-3 shadow-none" 
-                        onChange={handleFileChange} 
-                      />
+                  {/* KHU VỰC QUẢN LÝ HÌNH ẢNH MỚI */}
+                  <div className="col-12 mt-4">
+                    <div className="row g-3">
                       
-                      <div className="d-flex flex-wrap gap-3">
-                        {/* 1. HIỂN THỊ ẢNH ĐÃ CÓ TRÊN SERVER (Ảnh cũ) */}
-                        {isEditing && existingImages.map((img) => (
-                          <div key={img.id} className="position-relative shadow-sm border p-1 bg-white rounded" style={{ width: '80px', height: '80px' }}>
-                            <img
-                              src={`https://localhost:7221/outputs/${img.imageUrl}`}
-                              alt="existing"
-                              className="w-100 h-100 object-fit-cover rounded border"
-                            />
-                            <BsXCircleFill 
-                              className="position-absolute top-0 end-0 text-danger bg-white rounded-circle"
-                              style={{ cursor: 'pointer', transform: 'translate(40%, -40%)' }}
-                              onClick={() => handleDeleteExistingImage(img.id)} 
-                            />
-                            <span className="position-absolute bottom-0 start-0 badge bg-dark w-100" style={{fontSize:'8px', borderRadius: '0 0 4px 4px'}}>ẢNH CŨ</span>
-                          </div>
-                        ))}
-
-                        {/* 2. HIỂN THỊ ẢNH MỚI CHỌN (Preview) */}
-                        {previewUrls.map((url, i) => (
-                          <div key={i} className="position-relative shadow-sm border p-1 bg-white rounded" style={{ width: '80px', height: '80px' }}>
-                            <img
-                              src={url}
-                              alt="new preview"
-                              className="w-100 h-100 object-fit-cover rounded border border-primary"
-                            />
-                            <BsXCircleFill 
-                              className="position-absolute top-0 end-0 text-primary bg-white rounded-circle"
-                              style={{ cursor: 'pointer', transform: 'translate(40%, -40%)' }}
-                              onClick={() => removeFile(i)} 
-                            />
-                            <span className="position-absolute bottom-0 start-0 badge bg-primary w-100" style={{fontSize:'8px', borderRadius: '0 0 4px 4px'}}>MỚI</span>
-                          </div>
-                        ))}
+                      {/* 1. ẢNH ĐẠI DIỆN */}
+                      <div className="col-md-4">
+                        <label className="fw-bold small text-primary mb-2">Ảnh Đại Diện (Bắt buộc)</label>
+                        <div className="border border-primary rounded p-3 bg-light text-center" style={{ borderStyle: 'dashed !important' }}>
+                          <input 
+                            type="file" 
+                            accept="image/*"
+                            className="form-control mb-3 shadow-none form-control-sm" 
+                            onChange={handlePrimaryFileChange} 
+                          />
+                          {primaryPreviewUrl ? (
+                            <div className="position-relative d-inline-block shadow-sm border bg-white rounded" style={{ width: '120px', height: '120px' }}>
+                              <img src={primaryPreviewUrl} alt="Primary" className="w-100 h-100 object-fit-cover rounded border" />
+                              {/* Chỉ hiện nút Xóa nếu là file mới (chưa phải url từ server) */}
+                              {primaryFile && (
+                                <BsXCircleFill 
+                                  className="position-absolute top-0 end-0 text-danger bg-white rounded-circle fs-5"
+                                  style={{ cursor: 'pointer', transform: 'translate(30%, -30%)' }}
+                                  onClick={removePrimaryFile} 
+                                />
+                              )}
+                              <span className="position-absolute bottom-0 start-0 badge bg-primary w-100" style={{borderRadius: '0 0 4px 4px'}}>MAIN</span>
+                            </div>
+                          ) : (
+                            <div className="text-muted small py-4">Chưa chọn ảnh đại diện</div>
+                          )}
+                        </div>
                       </div>
+
+                      {/* 2. ẢNH MÔ TẢ */}
+                      <div className="col-md-8">
+                         <label className="fw-bold small text-muted mb-2">Ảnh Mô Tả Sản Phẩm (Tùy chọn)</label>
+                         <div className="border rounded p-3 bg-light h-100">
+                          <input 
+                            type="file" 
+                            multiple 
+                            accept="image/*"
+                            className="form-control mb-3 shadow-none form-control-sm" 
+                            onChange={handleFileChange} 
+                          />
+                          
+                          <div className="d-flex flex-wrap gap-3">
+                            {/* Ảnh mô tả cũ */}
+                            {isEditing && existingImages.filter(img => !img.isPrimary).map((img) => (
+                              <div key={img.id} className="position-relative shadow-sm border p-1 bg-white rounded" style={{ width: '70px', height: '70px' }}>
+                                <img src={`https://localhost:7221/outputs/${img.imageUrl}`} alt="existing" className="w-100 h-100 object-fit-cover rounded border" />
+                                <BsXCircleFill 
+                                  className="position-absolute top-0 end-0 text-danger bg-white rounded-circle"
+                                  style={{ cursor: 'pointer', transform: 'translate(40%, -40%)' }}
+                                  onClick={() => handleDeleteExistingImage(img.id)} 
+                                />
+                              </div>
+                            ))}
+
+                            {/* Ảnh mô tả mới */}
+                            {previewUrls.map((url, i) => (
+                              <div key={i} className="position-relative shadow-sm border p-1 bg-white rounded" style={{ width: '70px', height: '70px' }}>
+                                <img src={url} alt="new preview" className="w-100 h-100 object-fit-cover rounded border border-success" />
+                                <BsXCircleFill 
+                                  className="position-absolute top-0 end-0 text-success bg-white rounded-circle"
+                                  style={{ cursor: 'pointer', transform: 'translate(40%, -40%)' }}
+                                  onClick={() => removeFile(i)} 
+                                />
+                                <span className="position-absolute bottom-0 start-0 badge bg-success w-100" style={{fontSize:'8px', borderRadius: '0 0 4px 4px'}}>MỚI</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
 
-                  <div className="col-12">
+                  <div className="col-12 mt-3">
                     <label className="fw-bold small text-muted">Mô tả sản phẩm</label>
                     <textarea className="form-control shadow-none" rows="4" value={currentProduct.description} onChange={e => setCurrentProduct({...currentProduct, description: e.target.value})}></textarea>
                   </div>

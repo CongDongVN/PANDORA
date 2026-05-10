@@ -133,24 +133,17 @@ const ProductDetail = () => {
       <div className="product-main-layout">
         <div className="gallery-section-wrapper">
           <ProductGallery 
-  // Ảnh chính lấy từ trường PrimaryImageUrl của Backend
-  mainImage={product.primaryImageUrl} 
-  // Danh sách toàn bộ 5 ảnh
-  galleryImages={product.imageUrls} 
-/>
+            // Ảnh chính lấy từ trường PrimaryImageUrl của Backend
+            mainImage={product.primaryImageUrl} 
+            
+            // Lọc bỏ ảnh đại diện ra khỏi danh sách để tránh bị trùng lặp 2 lần
+            galleryImages={product.imageUrls.filter(url => url !== product.primaryImageUrl)} 
+          />
         </div>
         
         <div className="info-section-wrapper">
           <ProductInfo product={product} />
         </div>
-      </div>
-
-      {/* Các phần khác giữ nguyên */}
-      <div className="related-section-wrapper mt-5">
-        <RelatedProducts 
-          currentCategory={product.categoryName} 
-          currentProductId={product.id} 
-        />
       </div>
 
       <div className="reviews-section-wrapper mt-5">
