@@ -1,27 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useParams, useNavigate } from 'react-router-dom'; 
 import { 
-    BsGrid, BsBoxSeam, BsTags, BsPeople, BsSearch, 
-    BsCurrencyDollar, BsReceipt, BsPersonCheck, BsArrowUpShort, BsArrowDownShort,
+    BsGrid, BsBoxSeam, BsTags, BsPeople, BsSearch, BsBox, 
+    BsCurrencyDollar, BsReceipt, BsPersonCheck, BsArrowUpShort,
     BsThreeDotsVertical, BsCartX, BsTrophy, BsCalendarDate
 } from "react-icons/bs";
-// BỔ SUNG THÊM CÁC COMPONENT TỪ RECHARTS ĐỂ VẼ PIE & BAR
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
 
 import CategoryManager from './CategoryManager';
-import OrderManager from './OrderManager';
+import ProductManager from './ProductManager';
+import OrderManager from './OrderManager'; 
 import CustomerManager from './CustomerManager';
 
 const AdminDashboard = () => {
-    const [activeTab, setActiveTab] = useState('dashboard');
+    const { tab } = useParams(); 
+    const navigate = useNavigate(); 
+    const activeTab = tab || 'dashboard'; 
 
     // ================= DỮ LIỆU MÔ PHỎNG =================
-    const statsData = [
-        { title: "Tổng doanh thu", value: "$124,563", increase: true, percent: "16%", icon: <BsCurrencyDollar />, bgColor: "#d3ffe7", color: "#00ac4e" },
-        { title: "Tổng đơn hàng", value: "1,893", increase: false, percent: "1%", icon: <BsReceipt />, bgColor: "#ffc5c5", color: "#df0404" },
-        { title: "Chưa thanh toán", value: "342", increase: true, percent: "8%", icon: <BsCartX />, bgColor: "#ffc5c5", color: "#df0404" },
-        { title: "Khách hàng mới", value: "189", increase: true, percent: "5%", icon: <BsPersonCheck />, bgColor: "#fff3cd", color: "#ffc107" },
-    ];
-
     const chartData = [
         { name: 'T2', revenue: 1200 }, { name: 'T3', revenue: 2100 }, 
         { name: 'T4', revenue: 1800 }, { name: 'T5', revenue: 3200 }, 
@@ -44,26 +40,13 @@ const AdminDashboard = () => {
         { id: "#ORD-004", customer: "Marvin McKinney", product: "Vòng tay Basic", total: "$150.00", status: "Chờ xác nhận" },
     ];
 
-    // --- DỮ LIỆU MỚI: BIỂU ĐỒ TRÒN (THEO MIỀN) ---
-    const regionDataLastMonth = [
-        { name: 'Miền Bắc', value: 3800 },
-        { name: 'Miền Trung', value: 2500 },
-        { name: 'Miền Nam', value: 3200 },
-    ];
-    const regionDataThisMonth = [
-        { name: 'Miền Bắc', value: 4500 },
-        { name: 'Miền Trung', value: 2100 },
-        { name: 'Miền Nam', value: 3900 },
-    ];
-    const PIE_COLORS = ['#5932ea', '#ffc107', '#00ac4e']; // Tím, Vàng, Xanh lá
+    const regionDataLastMonth = [{ name: 'Miền Bắc', value: 3800 }, { name: 'Miền Trung', value: 2500 }, { name: 'Miền Nam', value: 3200 }];
+    const regionDataThisMonth = [{ name: 'Miền Bắc', value: 4500 }, { name: 'Miền Trung', value: 2100 }, { name: 'Miền Nam', value: 3900 }];
+    const PIE_COLORS = ['#5932ea', '#ffc107', '#00ac4e'];
 
-    // --- DỮ LIỆU MỚI: BIỂU ĐỒ CỘT (THEO DANH MỤC) ---
     const categoryData = [
-        { name: 'Nhẫn', revenue: 15000 },
-        { name: 'Dây chuyền', revenue: 12000 },
-        { name: 'Bông tai', revenue: 8500 },
-        { name: 'Vòng tay', revenue: 10500 },
-        { name: 'Charm', revenue: 18000 },
+        { name: 'Nhẫn', revenue: 15000 }, { name: 'Dây chuyền', revenue: 12000 },
+        { name: 'Bông tai', revenue: 8500 }, { name: 'Vòng tay', revenue: 10500 }, { name: 'Charm', revenue: 18000 },
     ];
 
     const getStatusStyle = (status) => {
@@ -76,10 +59,13 @@ const AdminDashboard = () => {
     };
 
     return (
-        <div className="d-flex" style={{ backgroundColor: '#f4f4f9', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
+        <div style={{ backgroundColor: '#f4f4f9', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
             
-            {/* ================= SIDEBAR (CỐ ĐỊNH) ================= */}
-            <div className="bg-white shadow-sm d-flex flex-column custom-scrollbar" style={{ width: '280px', height: '100vh', position: 'sticky', top: 0, overflowY: 'auto', padding: '24px', zIndex: 100 }}>
+            {/* ================= SIDEBAR CỐ ĐỊNH (FIXED TRÁI) ================= */}
+            {/* Đã sửa position: 'fixed', ép nó dính chặt vào góc trên cùng bên trái */}
+            <div className="bg-white shadow-sm d-flex flex-column custom-scrollbar" 
+                 style={{ width: '280px', height: '100vh', position: 'fixed', top: 0, left: 0, overflowY: 'auto', padding: '24px', zIndex: 100 }}>
+                
                 <div className="d-flex align-items-center mb-5 mt-2 px-2">
                     <div className="bg-dark rounded text-white d-flex justify-content-center align-items-center me-2" style={{ width: '36px', height: '36px' }}><span className="fw-bold fs-5">P</span></div>
                     <h4 className="fw-bold mb-0" style={{ letterSpacing: '0.5px' }}>PANDORA <span className="fs-6 text-muted fw-normal">v.01</span></h4>
@@ -90,11 +76,12 @@ const AdminDashboard = () => {
                         { id: 'dashboard', icon: <BsGrid />, label: 'Tổng quan' },
                         { id: 'orders', icon: <BsBoxSeam />, label: 'Quản lý Đơn hàng' },
                         { id: 'categories', icon: <BsTags />, label: 'Quản lý Danh mục' },
+                        { id: 'products', icon: <BsBox />, label: 'Quản lý Sản phẩm' }, 
                         { id: 'users', icon: <BsPeople />, label: 'Quản lý Người dùng' }, 
                     ].map((item) => (
                         <li className="nav-item" key={item.id}>
                             <button 
-                                onClick={() => setActiveTab(item.id)}
+                                onClick={() => navigate(`/admin/${item.id}`)} 
                                 className={`nav-link d-flex align-items-center w-100 border-0 text-start ${activeTab === item.id ? 'active' : ''}`}
                                 style={{ 
                                     padding: '12px 16px', borderRadius: '10px',
@@ -119,8 +106,9 @@ const AdminDashboard = () => {
                 </div>
             </div>
 
-            {/* ================= NỘI DUNG CHÍNH ================= */}
-            <div className="flex-grow-1 p-5">
+            {/* ================= NỘI DUNG CHÍNH (ĐẨY SANG PHẢI 280PX) ================= */}
+            {/* Đã thêm marginLeft: '280px' để chừa chỗ cho Sidebar */}
+            <div className="p-5" style={{ marginLeft: '280px' }}>
                 
                 <div className="d-flex justify-content-between align-items-center mb-5">
                     <h2 className="fw-bold mb-0">Xin chào Admin 👋,</h2>
@@ -130,12 +118,10 @@ const AdminDashboard = () => {
                     </div>
                 </div>
 
-                {/* HIỂN THỊ NỘI DUNG DỰA VÀO TAB */}
+                {/* --- 1. TAB TỔNG QUAN --- */}
                 {activeTab === 'dashboard' && (
                     <>
-                        {/* --- HÀNG 1: 4 THẺ THỐNG KÊ --- */}
                         <div className="row mb-4">
-                            {/* Tổng doanh thu */}
                             <div className="col-xl-3 col-md-6 mb-4">
                                 <div className="card border-0 shadow-sm rounded-4 p-4 h-100">
                                     <div className="d-flex justify-content-between align-items-start mb-3">
@@ -145,7 +131,6 @@ const AdminDashboard = () => {
                                     <p className="mb-0 text-success fw-bold" style={{ fontSize: '0.85rem' }}><BsArrowUpShort className="fs-5"/> 16% <span className="text-muted fw-normal">so với tháng trước</span></p>
                                 </div>
                             </div>
-                            {/* Đơn hàng */}
                             <div className="col-xl-3 col-md-6 mb-4">
                                 <div className="card border-0 shadow-sm rounded-4 p-4 h-100">
                                     <div className="d-flex justify-content-between align-items-start mb-2">
@@ -159,7 +144,6 @@ const AdminDashboard = () => {
                                     </div>
                                 </div>
                             </div>
-                            {/* Chưa thanh toán */}
                             <div className="col-xl-3 col-md-6 mb-4">
                                 <div className="card border-0 shadow-sm rounded-4 p-4 h-100">
                                     <div className="d-flex justify-content-between align-items-start mb-3">
@@ -169,7 +153,6 @@ const AdminDashboard = () => {
                                     <p className="mb-0 text-danger fw-bold" style={{ fontSize: '0.85rem' }}><BsArrowUpShort className="fs-5"/> 8% <span className="text-muted fw-normal">tỷ lệ rớt đơn tuần này</span></p>
                                 </div>
                             </div>
-                            {/* Khách hàng */}
                             <div className="col-xl-3 col-md-6 mb-4">
                                 <div className="card border-0 shadow-sm rounded-4 p-4 h-100">
                                     <div className="d-flex justify-content-between align-items-start mb-3">
@@ -181,7 +164,6 @@ const AdminDashboard = () => {
                             </div>
                         </div>
 
-                        {/* --- HÀNG 2: BIỂU ĐỒ TỔNG & TOP SP --- */}
                         <div className="row mb-4">
                             <div className="col-xl-8 mb-4 mb-xl-0">
                                 <div className="card border-0 shadow-sm rounded-4 p-4 h-100">
@@ -196,8 +178,7 @@ const AdminDashboard = () => {
                                             <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                                 <defs>
                                                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="5%" stopColor="#5932ea" stopOpacity={0.3}/>
-                                                        <stop offset="95%" stopColor="#5932ea" stopOpacity={0}/>
+                                                        <stop offset="5%" stopColor="#5932ea" stopOpacity={0.3}/><stop offset="95%" stopColor="#5932ea" stopOpacity={0}/>
                                                     </linearGradient>
                                                 </defs>
                                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
@@ -226,60 +207,30 @@ const AdminDashboard = () => {
                             </div>
                         </div>
 
-                        {/* --- HÀNG 3: BIỂU ĐỒ TRÒN & CỘT (MỚI THÊM) --- */}
                         <div className="row mb-5">
-                            {/* Biểu đồ Vành khuyên (Pie Chart) - So sánh Miền */}
                             <div className="col-xl-5 mb-4 mb-xl-0">
                                 <div className="card border-0 shadow-sm rounded-4 p-4 h-100">
                                     <div className="d-flex justify-content-between align-items-center mb-2">
-                                        <div>
-                                            <h5 className="fw-bold mb-0">Tỷ trọng khu vực</h5>
-                                            <p className="text-muted mb-0" style={{ fontSize: '0.85rem' }}>Doanh thu theo 3 miền</p>
-                                        </div>
-                                        {/* Bộ lọc Tháng/Năm */}
+                                        <div><h5 className="fw-bold mb-0">Tỷ trọng khu vực</h5><p className="text-muted mb-0" style={{ fontSize: '0.85rem' }}>Doanh thu theo 3 miền</p></div>
                                         <div className="d-flex gap-2">
-                                            <select className="form-select form-select-sm shadow-none w-auto bg-light border-0 text-muted fw-bold">
-                                                <option>Tất cả tháng</option><option>Tháng 9</option><option>Tháng 10</option>
-                                            </select>
-                                            <select className="form-select form-select-sm shadow-none w-auto bg-light border-0 text-muted fw-bold">
-                                                <option>2023</option><option>2024</option>
-                                            </select>
+                                            <select className="form-select form-select-sm shadow-none w-auto bg-light border-0 text-muted fw-bold"><option>Tất cả tháng</option><option>Tháng 9</option></select>
+                                            <select className="form-select form-select-sm shadow-none w-auto bg-light border-0 text-muted fw-bold"><option>2023</option><option>2024</option></select>
                                         </div>
                                     </div>
-
                                     <div className="row h-100 align-items-center">
                                         <div className="col-6 text-center">
                                             <p className="fw-bold text-muted mb-0" style={{ fontSize: '0.9rem' }}>Tháng trước</p>
                                             <div style={{ height: '220px' }}>
-                                                <ResponsiveContainer>
-                                                    <PieChart>
-                                                        <Pie data={regionDataLastMonth} innerRadius={50} outerRadius={80} paddingAngle={2} dataKey="value" stroke="none">
-                                                            {regionDataLastMonth.map((entry, index) => (
-                                                                <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                                                            ))}
-                                                        </Pie>
-                                                        <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                                                    </PieChart>
-                                                </ResponsiveContainer>
+                                                <ResponsiveContainer><PieChart><Pie data={regionDataLastMonth} innerRadius={50} outerRadius={80} paddingAngle={2} dataKey="value" stroke="none">{regionDataLastMonth.map((entry, index) => (<Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />))}</Pie><Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} /></PieChart></ResponsiveContainer>
                                             </div>
                                         </div>
                                         <div className="col-6 text-center">
                                             <p className="fw-bold text-dark mb-0" style={{ fontSize: '0.9rem' }}>Tháng này</p>
                                             <div style={{ height: '220px' }}>
-                                                <ResponsiveContainer>
-                                                    <PieChart>
-                                                        <Pie data={regionDataThisMonth} innerRadius={50} outerRadius={80} paddingAngle={2} dataKey="value" stroke="none">
-                                                            {regionDataThisMonth.map((entry, index) => (
-                                                                <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                                                            ))}
-                                                        </Pie>
-                                                        <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                                                    </PieChart>
-                                                </ResponsiveContainer>
+                                                <ResponsiveContainer><PieChart><Pie data={regionDataThisMonth} innerRadius={50} outerRadius={80} paddingAngle={2} dataKey="value" stroke="none">{regionDataThisMonth.map((entry, index) => (<Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />))}</Pie><Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} /></PieChart></ResponsiveContainer>
                                             </div>
                                         </div>
                                     </div>
-                                    {/* Chú thích màu sắc */}
                                     <div className="d-flex justify-content-center gap-4 mt-2">
                                         <div className="d-flex align-items-center"><div style={{ width: '12px', height: '12px', backgroundColor: '#5932ea', borderRadius: '50%', marginRight: '8px' }}></div><span className="text-muted fw-bold" style={{ fontSize: '0.85rem' }}>Miền Bắc</span></div>
                                         <div className="d-flex align-items-center"><div style={{ width: '12px', height: '12px', backgroundColor: '#ffc107', borderRadius: '50%', marginRight: '8px' }}></div><span className="text-muted fw-bold" style={{ fontSize: '0.85rem' }}>Miền Trung</span></div>
@@ -287,22 +238,13 @@ const AdminDashboard = () => {
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Biểu đồ Cột (Bar Chart) - So sánh Danh mục */}
                             <div className="col-xl-7">
                                 <div className="card border-0 shadow-sm rounded-4 p-4 h-100">
                                     <div className="d-flex justify-content-between align-items-center mb-4">
-                                        <div>
-                                            <h5 className="fw-bold mb-0">Doanh thu theo danh mục</h5>
-                                            <p className="text-muted mb-0" style={{ fontSize: '0.85rem' }}>Phân tích hiệu suất sản phẩm</p>
-                                        </div>
+                                        <div><h5 className="fw-bold mb-0">Doanh thu theo danh mục</h5><p className="text-muted mb-0" style={{ fontSize: '0.85rem' }}>Phân tích hiệu suất sản phẩm</p></div>
                                         <div className="d-flex gap-2">
-                                            <select className="form-select form-select-sm shadow-none w-auto bg-light border-0 text-muted fw-bold">
-                                                <option>Tháng 10</option><option>Tháng 11</option>
-                                            </select>
-                                            <select className="form-select form-select-sm shadow-none w-auto bg-light border-0 text-muted fw-bold">
-                                                <option>2023</option><option>2024</option>
-                                            </select>
+                                            <select className="form-select form-select-sm shadow-none w-auto bg-light border-0 text-muted fw-bold"><option>Tháng 10</option><option>Tháng 11</option></select>
+                                            <select className="form-select form-select-sm shadow-none w-auto bg-light border-0 text-muted fw-bold"><option>2023</option><option>2024</option></select>
                                         </div>
                                     </div>
                                     <div style={{ width: '100%', height: '260px' }}>
@@ -320,25 +262,15 @@ const AdminDashboard = () => {
                             </div>
                         </div>
 
-                        {/* --- HÀNG 4: BẢNG ĐƠN HÀNG --- */}
                         <div className="card border-0 shadow-sm rounded-4 p-4">
                             <div className="d-flex justify-content-between align-items-center mb-4">
                                 <div><h5 className="fw-bold mb-1">Đơn hàng gần đây</h5><p className="text-success mb-0 fw-bold" style={{ fontSize: '0.9rem' }}>Theo dõi các đơn hàng mới nhất</p></div>
-                                <div className="input-group bg-light rounded-3 px-2 py-1 w-auto" style={{ border: '1px solid #eee' }}>
-                                    <span className="input-group-text bg-transparent border-0 pe-2"><BsCalendarDate className="text-primary" /></span>
-                                    <input type="date" className="form-control form-control-sm border-0 bg-transparent shadow-none text-muted fw-bold" />
-                                </div>
+                                <div className="input-group bg-light rounded-3 px-2 py-1 w-auto" style={{ border: '1px solid #eee' }}><span className="input-group-text bg-transparent border-0 pe-2"><BsCalendarDate className="text-primary" /></span><input type="date" className="form-control form-control-sm border-0 bg-transparent shadow-none text-muted fw-bold" /></div>
                             </div>
                             <div className="table-responsive">
                                 <table className="table table-hover align-middle mb-0">
                                     <thead>
-                                        <tr>
-                                            <th className="text-muted fw-normal border-bottom-0 pb-3">Mã đơn</th>
-                                            <th className="text-muted fw-normal border-bottom-0 pb-3">Khách hàng</th>
-                                            <th className="text-muted fw-normal border-bottom-0 pb-3">Sản phẩm</th>
-                                            <th className="text-muted fw-normal border-bottom-0 pb-3">Tổng tiền</th>
-                                            <th className="text-muted fw-normal border-bottom-0 pb-3 text-center">Trạng thái</th>
-                                        </tr>
+                                        <tr><th className="text-muted fw-normal border-bottom-0 pb-3">Mã đơn</th><th className="text-muted fw-normal border-bottom-0 pb-3">Khách hàng</th><th className="text-muted fw-normal border-bottom-0 pb-3">Sản phẩm</th><th className="text-muted fw-normal border-bottom-0 pb-3">Tổng tiền</th><th className="text-muted fw-normal border-bottom-0 pb-3 text-center">Trạng thái</th></tr>
                                     </thead>
                                     <tbody>
                                         {recentOrders.map((order, index) => {
@@ -357,8 +289,12 @@ const AdminDashboard = () => {
                     </>
                 )}
 
-                {activeTab === 'orders' && <OrderManager />}
+                {/* --- 2. CÁC TAB KHÁC --- */}
+                
+
                 {activeTab === 'categories' && <CategoryManager />}
+                {activeTab === 'products' && <ProductManager />} 
+                {activeTab === 'orders' && <OrderManager />}
                 {activeTab === 'users' && <CustomerManager />}
 
             </div>

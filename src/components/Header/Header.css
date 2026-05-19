@@ -1,16 +1,99 @@
-/* Loại bỏ padding mặc định của nav-link để sát lề trái */
-.nav-link {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
+/* =========================================================
+   HỆ THỐNG CSS HEADER PANDORA (PHIÊN BẢN CỐ ĐỊNH & MÀU HỒNG)
+   ========================================================= */
+
+/* 1. TỔNG THỂ HEADER - THIẾT LẬP CỐ ĐỊNH */
+header.w-100 {
+    font-family: 'Arial', sans-serif !important;
+    text-transform: uppercase !important;
+    
+    /* LOGIC CỐ ĐỊNH: */
+    position: sticky !important;
+    top: 0 !important;
+    left: 0;
+    background-color: #ffffff !important; /* Phải có nền trắng để không bị xuyên thấu */
+    z-index: 9999 !important; /* Luôn nằm trên 6 danh mục tròn trồi lên */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Đổ bóng nhẹ khi lướt cho sang trọng */
 }
 
-/* Hiệu ứng hover cho menu */
+/* 2. ĐƯỜNG KẺ NGANG (Dưới Logo & Trên Menu) */
+header nav.header-nav-border {
+    border-top: 4px solid #ff9ea2 !important; 
+    border-bottom: 1px solid #ebebeb !important; 
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-top: 10px !important;
+}
+
+/* 3. Ô TÌM KIẾM */
+.header-search-input {
+    border-radius: 0 !important;
+    border-color: #ebebeb !important;
+}
+
+.header-search-input:focus {
+    border-color: #ff9ea2 !important;
+    box-shadow: none !important;
+}
+
+.header-search-input + .react-bootstrap-icons, 
+.header-search-input ~ svg {
+    color: #ff9ea2 !important;
+}
+
+/* 4. THANH MENU NAVIGATION */
+.nav-item .nav-link {
+    color: #000000;
+    font-weight: 700 !important;
+    font-size: 12px !important; 
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease !important;
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+    background: transparent !important;
+}
+
+/* 5. MEGAMENU ĐỒNG BỘ */
+/* Quan trọng: Megamenu phải có z-index cao hơn nữa để không bị lỗi hiển thị */
+.bg-white.shadow-sm.mega-menu-custom,
+div[style*="zIndex: 1000"] { 
+    border-top: 1px solid #ff9ea2 !important;
+    border-bottom: 3px solid #ff9ea2 !important;
+    z-index: 10000 !important; 
+}
+
+/* Link trong MegaMenu */
+.hover-pink:hover {
+    color: #ff9ea2 !important;
+    text-decoration: underline !important;
+}
+
+/* 6. ICON TIỆN ÍCH (Tim, Người dùng, Giỏ hàng) */
+header .d-flex.gap-4 svg {
+    transition: transform 0.2s ease, color 0.2s ease;
+    cursor: pointer;
+}
+
+header .d-flex.gap-4 svg:hover {
+    color: #ff9ea2 !important;
+    transform: scale(1.1);
+}
+
+/* Badge số lượng giỏ hàng */
+.badge.bg-dark {
+    background-color: #ff9ea2 !important;
+    color: #fff !important;
+}
+
+/* 7. TRẠNG THÁI ACTIVE & HOVER */
+.active-pink {
+    color: #ff9dae !important; 
+    font-weight: 800 !important;
+    border: none !important; 
+    text-decoration: none !important;
+}
+
 .nav-item:hover .nav-link {
-  color: #ff9dae !important; /* Đổi màu khi hover */
-}
-
-/* Đảm bảo font chữ thanh thoát */
-body {
-  font-family: 'Arial', sans-serif;
-  text-transform: uppercase;
+    color: #ff9dae !important;
 }

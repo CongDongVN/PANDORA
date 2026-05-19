@@ -19,6 +19,7 @@
   overflow: hidden;
   background-color: #f9f9f9;
   border-radius: 2px; /* Bo góc cực nhẹ */
+  
 }
 
 .feature-item img {
@@ -69,9 +70,3 @@
   left: 15px;   /* Đẩy vào trong một chút */
   /* Hoặc nếu muốn sát mép trái tuyệt đối như hình, dùng left: 0 và padding */
 }
-
-/* --- Điều chỉnh chiều cao cho cột giữa --- */
-.feature-item-tall img {
-  min-height: 480px; /* Tăng chiều cao cho cột giữa nổi bật */
-}
-/* Import font tương tự hoặc dùng font mặc định sang trọng */

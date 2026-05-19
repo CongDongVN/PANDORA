@@ -1,52 +1,55 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const MegaMenu = () => {
+  const categories = [
+    { name: 'Bộ sưu tập', path: '/collection' },
+    { name: 'Trang sức', path: '/jewelry' },
+    { name: 'Vòng tay', path: '/vong-tay' },
+    { name: 'Charms', path: '/charm' },
+    { name: 'Dây chuyền', path: '/day-chuyen' },
+    { name: 'Hoa tai', path: '/hoa-tai' },
+    { name: 'Nhẫn', path: '/nhan' },
+  ];
+
   return (
     <div 
-      className="bg-white border-top border-bottom shadow-sm"
+      className="bg-white shadow-sm mega-menu-custom"
       style={{ 
-  // --- CÁC THUỘC TÍNH QUAN TRỌNG ĐỂ FULL-WIDTH ---
-        position: 'absolute',
-        top: '100%',        // Nằm ngay dưới thanh nav
-        left: '50%',        // Di chuyển sang phải 50% chiều rộng thẻ cha
-        transform: 'translateX(-50%)', // Di chuyển ngược lại sang trái 50% chiều rộng chính nó
-        width: '100vw',     // Rộng 100% chiều rộng trình duyệt
-        zIndex: 1000,
-        // -----------------------------------------------
+        position: 'fixed', // Dùng fixed để nó không bị phụ thuộc vào thẻ li cha
+        top: 'auto',       // Để nó tự động hít vào dưới Navbar
+        left: 0,
+        right: 0,
+        width: '100vw',
+        zIndex: 10000,
         padding: '40px 0',
-        borderTop: '1px solid #eee'
-  }}
+        borderTop: '1px solid #ff9ea2',
+        borderBottom: '3px solid #ff9ea2'
+      }}
     >
-      <div className="container mega-menu-container">
+      <div className="container">
         <div className="row">
-          {/* Cột 1: TẤT CẢ SẢN PHẨM */}
+          {/* Cột 1: DANH MỤC */}
           <div className="col-md-3">
-            <h6 className="fw-bold mb-4">TẤT CẢ SẢN PHẨM</h6>
+            <h6 className="fw-bold mb-4" style={{ color: '#ff9ea2' }}>TẤT CẢ SẢN PHẨM</h6>
             <ul className="list-unstyled lh-lg" style={{ fontSize: '14px' }}>
-              <li><a href="#" className="text-decoration-none text-dark hover-pink">Vòng tay</a></li>
-              <li><a href="#" className="text-decoration-none text-dark hover-pink">Charms</a></li>
-              <li><a href="#" className="text-decoration-none text-dark hover-pink">Dây chuyền</a></li>
-              <li><a href="#" className="text-decoration-none text-dark hover-pink">Hoa tai</a></li>
-              <li><a href="#" className="text-decoration-none text-dark hover-pink">Nhẫn</a></li>
+              {categories.map((item, index) => (
+                <li key={index}>
+                  <Link to={item.path} className="text-decoration-none text-dark hover-pink">
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Cột 2: MỨC GIÁ */}
+          {/* Cột 2: GỢI Ý (Thêm cho đẹp bố cục) */}
           <div className="col-md-3">
-            <h6 className="fw-bold mb-4">MỨC GIÁ</h6>
+            <h6 className="fw-bold mb-4" style={{ color: '#ff9ea2' }}>TÀI KHOẢN</h6>
             <ul className="list-unstyled lh-lg" style={{ fontSize: '14px' }}>
-              <li><a href="#" className="text-decoration-none text-dark">Dưới 990.000đ</a></li>
-              <li><a href="#" className="text-decoration-none text-dark">Dưới 2 Triệu</a></li>
-              <li><a href="#" className="text-decoration-none text-dark">Từ 2-4 Triệu</a></li>
-              <li><a href="#" className="text-decoration-none text-dark">Từ 4-6 Triệu</a></li>
-              <li><a href="#" className="text-decoration-none text-dark">Từ 6-10 Triệu</a></li>
-              <li><a href="#" className="text-decoration-none text-dark">Trên 10 Triệu</a></li>
+              <li><Link to="/useracc" className="text-decoration-none text-dark hover-pink">Trang cá nhân</Link></li>
+              <li><Link to="/cart" className="text-decoration-none text-dark hover-pink">Giỏ hàng</Link></li>
             </ul>
-          </div>
-
-          {/* Cột 3: MONO X YOU */}
-          <div className="col-md-3">
-            <h6 className="fw-bold mb-4">MONO X YOU</h6>
           </div>
         </div>
       </div>

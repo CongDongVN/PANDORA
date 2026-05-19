@@ -1,8 +1,8 @@
 .footer-container {
-  background-color: #f8f9fa; /* Màu nền xám nhạt cực nhẹ */
-  font-family: 'Arial', sans-serif; /* Hoặc font chữ hệ thống của Pandora */
+  background-color: #ebebeb; /* Đổi sang xám đậm hơn để tách biệt hẳn với nền web */
+  font-family: 'Arial', sans-serif; 
+  border-top: 1px solid #dcdcdc; /* Thêm đường viền mỏng ở mép trên cho sắc nét */
 }
-
 .footer-title {
   font-weight: 800;
   font-size: 14px;
